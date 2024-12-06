@@ -1,10 +1,16 @@
 import { type FC } from 'react';
 import { Dialog } from '@headlessui/react';
-import { CameraIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { type Result } from '@zxing/library';
 import { useState, useEffect, useCallback } from 'react';
 import BarcodeScannerComponent from 'react-qr-barcode-scanner';
 import { twMerge } from 'tailwind-merge';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+    Camera,
+    X,
+    Warning,
+    Barcode
+  } from '@phosphor-icons/react';
 
 type BarcodeResult = {
     text: string;
@@ -70,114 +76,161 @@ const BarCodeReaderModal: FC<Props> = ({
     }, [isOpen, initializeCamera]);
 
     return (
-        <Dialog
-            open={isOpen}
-            onClose={handleClose}
-            className="relative z-50"
-        >
-            <div 
-            className="fixed inset-0 bg-black/30" 
-            aria-hidden="true" 
-            />
-            
-            <div className="fixed inset-0 flex items-start justify-center overflow-y-auto">
-                <div className="w-full max-w-2xl mx-auto mt-20 p-4">
-                <Dialog.Panel 
-                    className={twMerge(
-                        "relative w-full max-w-2xl",
-                        "bg-white rounded-xl shadow-xl",
-                        "p-6",
-                        "transform transition-all",
-                    )}
+        <AnimatePresence>
+          {isOpen && (
+            <Dialog
+              open={isOpen}
+              onClose={handleClose}
+              className="relative z-50"
+            >
+              {/* オーバーレイ */}
+              <motion.div 
+                className="fixed inset-0 bg-black/30 backdrop-blur-sm" 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                aria-hidden="true" 
+              />
+              
+              {/* モーダルコンテンツ */}
+              <div className="fixed inset-0 flex items-start justify-center overflow-y-auto">
+                <div className="w-full max-w-lg mx-auto mt-10 sm:mt-20 p-4">
+                  <Dialog.Panel>
+                    <motion.div
+                      className={twMerge(
+                        "relative w-full",
+                        "bg-white rounded-2xl shadow-xl",
+                        "p-4 sm:p-6",
+                      )}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 20 }}
                     >
-                    {/* 閉じるボタン */}
-                    <button
+                      {/* 閉じるボタン */}
+                      <motion.button
                         type="button"
                         onClick={handleClose}
                         className={twMerge(
-                        "absolute -top-2 -right-2",
-                        "p-2 rounded-full",
-                        "bg-white text-red-600",
-                        "border border-red-200",
-                        "outline-none",
-                        "hover:bg-red-50",
-                        "focus:border-transparent",
-                        "focus:ring-1 focus:ring-red-500/30",
-                        "focus:shadow-[0_0_0_4px_rgba(239,68,68,0.1)]",
-                        "transition-shadow duration-200",
-                        "shadow-md"
+                          "absolute -top-2 -right-2 z-10",
+                          "p-2 rounded-full",
+                          "bg-white text-gray-500",
+                          "border border-orange-100",
+                          "outline-none",
+                          "hover:bg-orange-50",
+                          "focus:border-transparent",
+                          "focus:ring-2 focus:ring-orange-500/20",
+                          "focus:shadow-[0_0_0_4px_rgba(249,115,22,0.1)]",
+                          "transition-all duration-200",
+                          "shadow-md"
                         )}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
                         aria-label="閉じる"
-                    >
-                        <XMarkIcon className="h-5 w-5" />
-                    </button>
-
-                    {/* ヘッダー部分 */}
-                    <div className="flex flex-col items-center gap-4 pb-6 mb-6 border-b border-gray-200">
-                        <div className="flex items-center justify-center w-14 h-14 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl shadow-lg">
-                        <CameraIcon className="h-7 w-7 text-white" />
-                        </div>
-                        <div className="flex flex-col items-center gap-1">
-                        <Dialog.Title className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-indigo-800">
+                      >
+                        <X weight="bold" className="h-5 w-5" />
+                      </motion.button>
+    
+                      {/* ヘッダー部分 */}
+                      <div className="flex flex-col items-center gap-3 sm:gap-4 pb-4 sm:pb-6 border-b border-orange-100">
+                        <motion.div 
+                          className="flex items-center justify-center w-12 sm:w-14 h-12 sm:h-14 bg-gradient-to-br from-orange-400 to-amber-500 rounded-xl shadow-lg"
+                          initial={{ scale: 0.8 }}
+                          animate={{ scale: 1 }}
+                          transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                        >
+                          <Camera weight="duotone" className="h-6 sm:h-7 w-6 sm:w-7 text-white" />
+                        </motion.div>
+                        <motion.div 
+                          className="flex flex-col items-center gap-1"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ delay: 0.2 }}
+                        >
+                          <Dialog.Title className="text-xl sm:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-orange-500 to-amber-600">
                             バーコードをスキャン
-                        </Dialog.Title>
-                        <p className="text-sm text-gray-500">
+                          </Dialog.Title>
+                          <p className="text-xs sm:text-sm text-orange-600/70">
                             商品のバーコードをカメラにかざしてください
-                        </p>
-                        </div>
-                    </div>
-
-                    {/* カメラビュー部分 */}
-                    <div 
+                          </p>
+                        </motion.div>
+                      </div>
+    
+                      {/* カメラビュー部分 */}
+                      <motion.div 
                         className={twMerge(
-                        "relative w-full",
-                        "bg-gray-50 rounded-xl",
-                        "border border-gray-200",
-                        "overflow-hidden",
-                        "shadow-inner",
-                        "h-64" // カメラビューの高さを増加
+                          "relative w-full mt-4 sm:mt-6",
+                          "bg-orange-50/50 rounded-xl",
+                          "border border-orange-100",
+                          "overflow-hidden",
+                          "shadow-inner",
+                          "h-64 sm:h-80"
                         )}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3 }}
                         role="region"
                         aria-label="カメラビュー"
-                    >
+                      >
                         {isLoading && (
-                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-50 z-10">
-                            <CameraIcon className="w-8 h-8 text-gray-400 animate-pulse mb-2" />
-                            <p className="text-sm text-gray-500">カメラを起動しています...</p>
-                        </div>
+                          <motion.div 
+                            className="absolute inset-0 flex flex-col items-center justify-center bg-orange-50/50 z-10"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                          >
+                            <Camera weight="duotone" className="w-8 h-8 text-orange-400 animate-pulse mb-2" />
+                            <p className="text-sm text-orange-600">カメラを起動しています...</p>
+                          </motion.div>
                         )}
-
+    
                         {!isLoading && !hasPermission && (
-                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-50">
-                            <CameraIcon className="w-8 h-8 text-red-400 mb-2" />
+                          <motion.div 
+                            className="absolute inset-0 flex flex-col items-center justify-center bg-orange-50/50"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                          >
+                            <Warning weight="duotone" className="w-8 h-8 text-red-400 mb-2" />
                             <p className="text-sm text-red-500">カメラへのアクセスが許可されていません</p>
-                        </div>
+                          </motion.div>
                         )}
-
+    
                         {shouldShowScanner && hasPermission && (
-                        <div className="absolute inset-0">
+                          <motion.div 
+                            className="absolute inset-0"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                          >
                             <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
-                            <BarcodeScannerComponent
+                              <BarcodeScannerComponent
                                 width="100%"
                                 height="100%"
                                 onUpdate={(error: unknown, result?: Result) => {
-                                if (result) {
+                                  if (result) {
                                     onDetected(error, { text: result.getText() });
-                                } else {
+                                  } else {
                                     onDetected(error, null);
-                                }
+                                  }
                                 }}
                                 facingMode="environment"
-                            />
+                              />
+                              <motion.div
+                                className="absolute inset-0 pointer-events-none"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                              >
+                                <Barcode weight="duotone" className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 text-orange-500/30" />
+                              </motion.div>
                             </div>
-                        </div>
+                          </motion.div>
                         )}
-                    </div>
-                    </Dialog.Panel>
+                      </motion.div>
+                    </motion.div>
+                  </Dialog.Panel>
                 </div>
-            </div>
-        </Dialog>
-    );
-};
+              </div>
+            </Dialog>
+          )}
+        </AnimatePresence>
+      );
+    };
 
 export default BarCodeReaderModal;
