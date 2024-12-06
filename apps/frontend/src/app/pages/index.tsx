@@ -10,12 +10,13 @@ import Link from 'next/link';
 import Modal from 'react-modal';
 import StoreRegistrationModal from '../components/StoreRegistrationModal';
 import BarcodeReaderModal from '../components/BarCodeReaderModal';
-import { Bars3Icon, BuildingStorefrontIcon, CalendarIcon, MagnifyingGlassIcon, QrCodeIcon } from '@heroicons/react/24/outline';
-import { HomeIcon } from '@heroicons/react/24/outline';
+import { BuildingStorefrontIcon} from '@heroicons/react/24/outline';
 import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
 import dayjs from 'dayjs';
-import { ArrowTrendingUpIcon, CheckIcon, ChevronDownIcon, ChevronUpDownIcon, CurrencyYenIcon, PhotoIcon, ShoppingCartIcon, TagIcon } from '@heroicons/react/20/solid';
+import { ArrowTrendingUpIcon, TagIcon } from '@heroicons/react/20/solid';
+import { motion, AnimatePresence } from 'framer-motion';
+import { CurrencyJpy, ShoppingCart, Tag, CaretDoubleDown, MagnifyingGlass, Storefront, CaretUpDown, Check, Barcode, List, House, CaretDown, Calendar, Timer, ImageSquare, CaretUp, Info } from '@phosphor-icons/react';
 
 type BarcodeResult = {
   text: string;
@@ -66,6 +67,12 @@ const HomePage: React.FC = () => {
   const [expandedProductId, setExpandedProductId] = useState<string | null>(null);
   const [selectedSearchStoreId, setSelectedSearchStoreId] = useState<string>('all');
   const [stores, setStores] = useState<Array<{ id: string; name: string }>>([]);
+  const [scrollY, setScrollY] = useState(0);  // スクロール位置の状態管理を追加
+
+// スクロール位置の監視
+useEffect(() => {
+
+}, []);
 
   // エンターキーイベントをキャンセルする関数
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -207,6 +214,13 @@ const fetchStores = async () => {
 
     // コンポーネントのマウント時に実行
     useEffect(() => {
+      // スクロール位置の監視
+      const handleScroll = () => {
+        setScrollY(window.scrollY);
+      };
+    
+      window.addEventListener('scroll', handleScroll, { passive: true });
+
       // コンポーネントマウント時に店舗情報を取得
       fetchStores();
 
@@ -215,6 +229,7 @@ const fetchStores = async () => {
       }
       
       return () => {
+        window.removeEventListener('scroll', handleScroll);
         // アンマウント時にすべてのモーダルを確実に閉じる
         setIsModalOpen(false);
         setIsBarcodeReaderOpen(false);
@@ -222,44 +237,76 @@ const fetchStores = async () => {
       };
     }, []);
 
-    // useEffect で状態変更を監視（デバッグ用）
-useEffect(() => {
-  console.log('scannedProduct updated:', scannedProduct);
-}, [scannedProduct]);
-
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-amber-50">
-    <div className="container mx-auto px-4 pt-8 pb-8">
-      {/* ヘッダー部分 */}
-      <div className="flex flex-col items-center gap-3 pb-6 mb-8 border-b border-orange-100">
-        {/* アイコンを買い物かごと価格タグの組み合わせに */}
-        <div className="flex items-center justify-center h-12 px-4 bg-gradient-to-r from-orange-400 to-amber-500 rounded-lg shadow-md">
-          <div className="flex items-center gap-2">
-            <ShoppingCartIcon className="h-6 w-6 text-white" />
-            <TagIcon className="h-5 w-5 text-white/80" />
+      <div className="container mx-auto px-4 pt-4 pb-8">
+        {/* ヘッダー部分のコンテナ */}
+        <div className="relative pb-6">
+          <div className="flex flex-col items-center gap-3">
+            <div className="flex items-center justify-center h-12 px-4 bg-gradient-to-r from-orange-400 to-amber-500 rounded-lg shadow-md">
+              <div className="flex items-center gap-2">
+                <motion.div
+                  animate={{ rotate: [0, -10, 0] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  <div className="text-white">
+                    <ShoppingCart size={24} weight="duotone" />
+                  </div>
+                </motion.div>
+                <motion.div
+                  animate={{ y: [0, -2, 0] }}
+                  transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  <div className="text-white/80">
+                    <Tag size={20} weight="duotone" />
+                  </div>
+                </motion.div>
+              </div>
+            </div>
+
+            {/* タイトルとサブタイトル */}
+            <div className="flex flex-col items-center">
+              <motion.h1 
+                className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-orange-500 to-amber-600"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3, duration: 0.6 }}
+              >
+                お値段ナビ！
+              </motion.h1>
+              <motion.p 
+                className="text-xs text-orange-600/70 mt-0.5"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5, duration: 0.6 }}
+              >
+                いろんな商品の最安値や店舗ごとの価格を見ることができます
+              </motion.p>
+            </div>
           </div>
+          {/* ボーダーを別要素として配置 */}
+          <div className="absolute bottom-0 left-0 right-0 h-px bg-orange-100" />
         </div>
-        <div className="flex flex-col items-center">
-          <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-orange-500 to-amber-600">
-            お値段ナビ！
-          </h1>
-          <p className="text-xs text-orange-600/70 mt-0.5">
-            いろんな商品の最安値や店舗ごとの価格を見ることができます
-          </p>
+
+          {/* スクロールインジケーター */}
+          <motion.div 
+            className="hidden md:block fixed bottom-4 left-1/2 transform -translate-x-1/2"
+            animate={{ y: [0, 5, 0] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <CaretDoubleDown size={24} weight="duotone" className="text-orange-400" />
+          </motion.div>
         </div>
-      </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* 検索フォーム */}
-        <div className="max-w-3xl mx-auto mb-8">
-          {/* 検索フォームと店舗選択 */}
-          <div className="space-y-4">
+        <div className="container mx-auto py-8">
+          <motion.div className="space-y-4 sm:space-y-6">
             {/* 検索入力フィールド */}
             <div className="relative flex-1 max-w-lg mx-auto">
               <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                <MagnifyingGlass weight="duotone" className="h-5 w-5 text-orange-400" />
               </div>
               <input
                 type="text"
@@ -269,16 +316,15 @@ useEffect(() => {
                 placeholder="商品名を入力"
                 className={twMerge(
                   "block w-full",
-                  "pl-10 pr-3 py-2.5",
+                  "pl-10 pr-3 py-3",
                   "text-base font-medium text-gray-700",
                   "bg-white",
-                  "border border-gray-200 rounded-lg",
+                  "border border-orange-100 rounded-xl",
                   "outline-none",
                   "focus:border-transparent",
-                  "focus:ring-1 focus:ring-blue-500/30",
-                  "focus:shadow-[0_0_0_4px_rgba(59,130,246,0.1)]",
+                  "focus:ring-2 focus:ring-orange-500/20",
                   "placeholder:text-gray-400",
-                  "transition-shadow duration-200",
+                  "transition-all duration-200",
                   "shadow-sm"
                 )}
               />
@@ -287,63 +333,55 @@ useEffect(() => {
             {/* 店舗選択 */}
             <div className="relative max-w-lg mx-auto">
               <Listbox value={selectedSearchStoreId} onChange={setSelectedSearchStoreId}>
-                <div className="relative mt-1">
+                <div className="relative">
                   <Listbox.Button className={twMerge(
                     "relative w-full cursor-default",
-                    "rounded-lg bg-white py-2.5 pl-10",
-                    "pr-10 text-left",
-                    "border border-gray-200",
+                    "rounded-xl bg-white py-3 pl-10 pr-10",
+                    "border border-orange-100",
                     "outline-none",
                     "focus:border-transparent",
-                    "focus:ring-1 focus:ring-blue-500/30",
-                    "focus:shadow-[0_0_0_4px_rgba(59,130,246,0.1)]",
-                    "transition-shadow duration-200",
+                    "focus:ring-2 focus:ring-orange-500/20",
+                    "transition-all duration-200",
                     "shadow-sm"
                   )}>
                     <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                      <BuildingStorefrontIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                      <Storefront weight="duotone" className="h-5 w-5 text-orange-400" />
                     </span>
                     <span className="block truncate text-base font-medium text-gray-700">
                       {stores.find((store) => store.id === selectedSearchStoreId)?.name || '店舗を選択'}
                     </span>
                     <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                      <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                      <CaretUpDown weight="bold" className="h-5 w-5 text-orange-400" />
                     </span>
                   </Listbox.Button>
+
                   <Transition
                     as={Fragment}
                     leave="transition ease-in duration-100"
                     leaveFrom="opacity-100"
                     leaveTo="opacity-0"
                   >
-                  <Listbox.Options className={twMerge(
-                    "absolute mt-1 max-h-60 w-full overflow-auto",
-                    "rounded-lg bg-white py-1",
-                    "text-base shadow-lg",
-                    "ring-1 ring-black ring-opacity-5",
-                    "focus:outline-none",
-                    "sm:text-sm",
-                    "z-50"
-                  )}>
+                    <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-xl bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                       {stores.map((store) => (
                         <Listbox.Option
                           key={store.id}
                           value={store.id}
                           className={({ active }) => twMerge(
-                            "relative cursor-default select-none",
-                            "py-2.5 pl-10 pr-4", 
-                            active ? "bg-blue-50 text-blue-900" : "text-gray-900",
-                            "transition-colors duration-100"
+                            "relative cursor-default select-none py-2 pl-10 pr-4",
+                            active ? "bg-orange-50 text-orange-600" : "text-gray-700"
                           )}
                         >
                           {({ selected }) => (
                             <>
-                              <span className={`block truncate ${selected ? 'font-semibold' : 'font-normal'}`}>
+                              <span className={twMerge(
+                                "block truncate",
+                                selected ? "font-medium" : "font-normal"
+                              )}>
                                 {store.name}
                               </span>
                               {selected && (
-                                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-blue-600">
-                                  <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-orange-500">
+                                  <Check weight="bold" className="h-5 w-5" />
                                 </span>
                               )}
                             </>
@@ -355,182 +393,210 @@ useEffect(() => {
                 </div>
               </Listbox>
             </div>
-          
-            <div className="mt-4 flex gap-3 justify-center">
-            <button
-              onClick={handleSearch}
-              className={twMerge(
-                "inline-flex items-center",
-                "px-4 py-2",
-                "bg-blue-600 text-white", // 背景色を青に、テキストを白に変更
-                "border border-transparent rounded-lg", // ボーダーを透明に
-                "outline-none",
-                "hover:bg-blue-700", // ホバー時は少し濃い青に
-                "focus:border-transparent",
-                "focus:ring-1 focus:ring-blue-500/30",
-                "focus:shadow-[0_0_0_4px_rgba(59,130,246,0.1)]",
-                "transition-all duration-200" // hover時の背景色変更もスムーズに
-              )}
+
+            {/* ボタングループ */}
+            <motion.div 
+              className="mt-4 sm:mt-6 flex flex-col sm:flex-row gap-3 justify-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+            >
+              <motion.button
+                onClick={handleSearch}
+                className={twMerge(
+                  "inline-flex items-center justify-center",
+                  "w-full sm:w-auto",
+                  "px-4 py-2.5",
+                  "bg-gradient-to-r from-orange-500 to-amber-500 text-white",
+                  "border border-transparent rounded-xl",
+                  "outline-none",
+                  "hover:from-orange-600 hover:to-amber-600",
+                  "focus:ring-2 focus:ring-orange-500/20",
+                  "transition-all duration-200"
+                )}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
               >
-                <MagnifyingGlassIcon className="h-5 w-5 mr-2" />
+                <MagnifyingGlass weight="bold" className="h-5 w-5 mr-2" />
                 検索
-              </button>
-              <button
+              </motion.button>
+
+              <motion.button
                 onClick={() => setIsBarcodeReaderOpen(true)}
                 className={twMerge(
-                  "inline-flex items-center",
-                  "px-4 py-2",
+                  "inline-flex items-center justify-center",
+                  "w-full sm:w-auto",
+                  "px-4 py-2.5",
                   "bg-white text-gray-700",
-                  "border border-gray-200 rounded-lg",
+                  "border border-orange-100 rounded-xl",
                   "outline-none",
-                  "hover:bg-gray-50",
-                  "focus:border-transparent",
-                  "focus:ring-1 focus:ring-blue-500/30",
-                  "focus:shadow-[0_0_0_4px_rgba(59,130,246,0.1)]",
-                  "transition-shadow duration-200"
+                  "hover:bg-orange-50",
+                  "focus:ring-2 focus:ring-orange-500/20",
+                  "transition-all duration-200"
                 )}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
               >
-                <QrCodeIcon className="h-5 w-5 mr-2" />
+                <Barcode weight="duotone" className="h-5 w-5 mr-2 text-orange-500" />
                 バーコード読取
-              </button>
-            </div>
-          </div>
+              </motion.button>
+            </motion.div>
+          </motion.div>
         </div>
 
         {/* セパレーター */}
         <div className="space-y-4  space-x-3 mx-auto mb-8"> {}
           <div className="relative flex justify-center">
             <div className="absolute inset-0 flex items-center" aria-hidden="true">
-              <div className="w-full border-t border-gray-200" />
+              <div className="w-full border-b border-orange-100" />
             </div>
           </div>
         </div>
 
         {/* 商品一覧*/}
-        <div className="space-y-4">
+        <div className="space-y-6">
           {searchResults.length === 0 ? (
-            <div className="text-center py-8">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
-                <BuildingStorefrontIcon className="h-8 w-8 text-gray-400" />
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              className="bg-white rounded-2xl shadow-sm border border-orange-100 overflow-hidden"
+            >
+              <div className="text-center py-12">
+                <motion.div 
+                  className="inline-flex items-center justify-center w-20 h-20 rounded-xl bg-orange-50 mb-4"
+                  initial={{ scale: 0.8 }}
+                  animate={{ scale: 1 }}
+                  transition={{ 
+                    type: "spring",
+                    stiffness: 200,
+                    damping: 15,
+                    delay: 0.2 
+                  }}
+                >
+                  <Storefront weight="duotone" className="h-10 w-10 text-orange-300" />
+                </motion.div>
+                <motion.h3 
+                  className="text-xl font-medium text-gray-900 mb-2"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  最安値の商品がありません
+                </motion.h3>
+                <motion.p 
+                  className="text-sm text-gray-500"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.4 }}
+                >
+                  選択した店舗での商品情報が登録されていません
+                </motion.p>
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
-                最安値の商品がありません
-              </h3>
-              <p className="text-sm text-gray-500">
-                選択した店舗での商品情報が登録されていません
-              </p>
-            </div>
+            </motion.div>
           ) : (
-            searchResults.map((product: Product) => (
-              <div
-                key={product.id}
-                className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer"
+          searchResults.map((product) => (
+            <motion.div
+              key={product.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              className="bg-white rounded-2xl shadow-sm border border-orange-100 overflow-hidden"
+            >
+              <motion.button
                 onClick={() => handleProductClick(product.id)}
+                className="w-full text-left"
+                whileHover={{ backgroundColor: 'rgba(251, 146, 60, 0.05)' }}
+                transition={{ duration: 0.2 }}
               >
-                <div className="p-4">
-                  <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
-                    {/* 商品画像と情報 */}
-                    <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-                      {/* 商品画像 */}
-                      <div className="w-full sm:w-24 h-40 sm:h-24 flex-shrink-0">
-                        {product.barcode ? (
-                          <Image
-                            src={`https://image.jancodelookup.com/${product.barcode}`}
-                            alt={product.name}
-                            width={96}
-                            height={96}
-                            className="w-full h-full object-contain rounded-lg"
-                          />
-                        ) : (
-                          <div className="w-full h-full bg-gray-100 rounded-lg flex items-center justify-center">
-                            <PhotoIcon className="w-8 h-8 text-gray-400" />
-                          </div>
+                <div className="p-4 sm:p-6">
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    {/* 商品画像 */}
+                    <div className="w-20 h-20 sm:w-32 sm:h-32 mx-auto sm:mx-0 flex-shrink-0 bg-white rounded-xl overflow-hidden">
+                      {product.barcode ? (
+                        <Image
+                          src={`https://image.jancodelookup.com/${product.barcode}`}
+                          alt={product.name}
+                          width={128}
+                          height={128}
+                          className="w-full h-full object-contain"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <ImageSquare weight="duotone" className="w-8 h-8 text-orange-300" />
+                        </div>
+                      )}
+                    </div>
+
+                    {/* 商品情報 */}
+                    <div className="flex-1 min-w-0 text-center sm:text-left">
+                      <div className="flex flex-wrap justify-center sm:justify-start gap-2 mb-2">
+                        {product.makerName && (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                            {product.makerName}
+                          </span>
+                        )}
+                        {product.brandName && (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                            {product.brandName}
+                          </span>
                         )}
                       </div>
 
-                      {/* 商品情報 */}
-                      <div className="flex-1 min-w-0">
-                        {/* メーカー・ブランド情報 */}
-                        <div className="flex flex-wrap gap-2 mb-1">
-                          {product.makerName && (
-                          // メーカー名のバッジ
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
-                            {product.makerName}
-                          </span>
-                          )}
-                          {product.brandName && (
-                            // ブランド名のバッジ
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                              {product.brandName}
-                            </span>
-                          )}
+                      {/* 商品名部分 */}
+                      <h2 className="text-base sm:text-lg font-semibold text-gray-900 mb-2 flex items-center gap-2 justify-center sm:justify-start">
+                        {product.name}
+                        <CaretDown
+                          weight="bold"
+                          className={`h-5 w-5 text-orange-400 transition-transform duration-200 ${
+                            expandedProductId === product.id ? 'rotate-180' : ''
+                          }`}
+                        />
+                      </h2>
+
+                      {/* 店舗・日付情報 */}
+                      <div className="flex flex-wrap gap-3 justify-center sm:justify-start">
+                        <div className="flex items-center text-gray-600">
+                          <Storefront weight="duotone" className="h-4 w-4 mr-1 text-orange-400" />
+                          <span className="text-sm">{product.prices[0]?.store.name ?? '-'}</span>
                         </div>
-
-                        {/* 商品名 */}
-                        <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                          {product.name}
-                          <ChevronDownIcon 
-                            className={`h-5 w-5 text-gray-400 transition-transform duration-200 ${
-                              expandedProductId === product.id ? 'transform rotate-180' : ''
-                            }`}
-                          />
-                        </h2>
-
-                        {/* 店舗情報と登録日 */}
-                        <div className="flex flex-wrap gap-2">
-                          <div className="flex items-center text-gray-500">
-                            <BuildingStorefrontIcon className="h-4 w-4 mr-1" />
-                            <span className="text-sm">{product.prices[0]?.store.name ?? '-'}</span>
-                          </div>
-                          <div className="flex items-center text-gray-500">
-                            <CalendarIcon className="h-4 w-4 mr-1" />
-                            <span className="text-sm">
-                              {product.prices[0]?.updatedAt ? dayjs(product.prices[0].updatedAt).format('YYYY/MM/DD') : '-'}
-                            </span>
-                          </div>
+                        <div className="flex items-center text-gray-600">
+                          <Calendar weight="duotone" className="h-4 w-4 mr-1 text-orange-400" />
+                          <span className="text-sm">
+                            {product.prices[0]?.updatedAt ? dayjs(product.prices[0].updatedAt).format('YYYY/MM/DD') : '-'}
+                          </span>
                         </div>
                       </div>
                     </div>
 
-                    {/* 最安値の価格表示 */}
-                    <div className={twMerge(
-                      "w-full sm:w-auto text-right mt-2 sm:mt-0",
-                      "transition-opacity duration-200",
-                      (isModalOpen || isStoreModalOpen || isBarcodeReaderOpen) && "opacity-50"
-                    )}>
+                    {/* 価格表示 */}
+                    <div className="w-full sm:w-auto text-center sm:text-right mt-4 sm:mt-0">
                       <div className="relative pt-8">
                         {/* 更新バッジ */}
-                        <div className="absolute -top-1 right-0 z-10">
-                          <div className={twMerge(
-                            "flex items-center gap-1 px-2 py-1 rounded-full border shadow-sm w-[120px] justify-center transition-opacity duration-200",
+                        <motion.div 
+                          className={twMerge(
+                            "absolute -top-1 left-1/2 sm:left-auto sm:right-0 transform -translate-x-1/2 sm:translate-x-0",
+                            "flex items-center gap-1.5 px-3 py-1.5 rounded-full",
+                            "border shadow-sm",
                             product.prices[0]?.updatedAt && isUpdatedWithinDays(product.prices[0].updatedAt, 7)
-                              ? "bg-green-100 text-green-800 border-green-200"
-                              : "bg-gray-100 text-gray-600 border-gray-200",
-                          )}>
-                            <svg
-                              className="w-3 h-3 flex-shrink-0"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                              />
-                            </svg>
-                            <span className="text-xs font-medium whitespace-nowrap">
-                              {product.prices[0]?.updatedAt && isUpdatedWithinDays(product.prices[0].updatedAt, 7)
-                                ? "7日以内に更新"
-                                : "7日以上更新なし"}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="text-sm text-gray-500 mb-1">最安価格</div>
-                        <div className="flex items-center justify-end gap-1">
-                          <CurrencyYenIcon className="h-6 w-6 text-indigo-600" />
-                          <span className="text-2xl sm:text-3xl font-bold text-indigo-600">
+                              ? "bg-green-50 text-green-700 border-green-200"
+                              : "bg-gray-50 text-gray-600 border-gray-200"
+                          )}
+                          whileHover={{ scale: 1.05 }}
+                        >
+                          <Timer weight="duotone" className="w-3.5 h-3.5" />
+                          <span className="text-xs font-medium whitespace-nowrap">
+                            {product.prices[0]?.updatedAt && isUpdatedWithinDays(product.prices[0].updatedAt, 7)
+                              ? "7日以内に更新"
+                              : "7日以上更新なし"}
+                          </span>
+                        </motion.div>
+
+                        {/* 価格表示 */}
+                        <div className="text-sm text-gray-500 mb-1.5">最安価格</div>
+                        <div className="flex items-center justify-center sm:justify-end gap-1.5">
+                          <CurrencyJpy weight="duotone" className="h-6 w-6 text-orange-500" />
+                          <span className="text-2xl sm:text-3xl font-bold text-orange-500">
                             {product.prices[0]?.price.toLocaleString() ?? '-'}
                           </span>
                         </div>
@@ -538,97 +604,190 @@ useEffect(() => {
                     </div>
                   </div>
                 </div>
+              </motion.button>
 
-                {/* アコーディオンの内容 */}
-                <div
-                  className={`overflow-hidden transition-all duration-200 ${
-                    expandedProductId === product.id ? 'max-h-[500px]' : 'max-h-0'
-                  }`}
-                >
-                  <div className="p-4 border-t border-gray-100">
-                    <h3 className="text-sm font-medium text-gray-900 mb-3">他店舗の価格</h3>
-                    <div className="space-y-2">
-                      {product.prices?.length <= 1 ? (
-                        <div className="text-sm text-gray-500 text-center py-2 bg-gray-50 rounded-lg">
-                          登録されていません
+              {/* アコーディオンの内容 */}
+              <AnimatePresence>
+                {expandedProductId === product.id && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <div className="p-4 sm:p-6 border-t border-orange-100 bg-orange-50/50">
+                      <div className="space-y-4">
+                        {/* セクションタイトル */}
+                        <div className="flex items-center gap-2 text-gray-900">
+                          <Info weight="duotone" className="h-5 w-5 text-orange-500" />
+                          <h3 className="font-medium">他店舗の情報</h3>
                         </div>
-                      ) : (
-                        product.prices
-                          ?.slice(1)
-                          ?.map((priceInfo) => (
-                            <div
-                              key={`${priceInfo.store.name}-${priceInfo.price}`}
-                              className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-3 rounded-lg bg-gray-50"
+                        {/* 店舗ごとの価格一覧 */}
+                        {product.prices.map((price) => {
+                          // 最安値との価格差を計算
+                          const lowestPrice = product.prices[0]?.price;
+                          const lowestPriceStoreId = product.prices[0]?.store.id;
+                          const priceDiff = lowestPrice ? price.price - lowestPrice : 0;
+                          
+                          if (price.store.id === lowestPriceStoreId) return;
+                          return (
+                            <motion.div
+                              key={price.id}
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-white rounded-xl border border-orange-100/50 gap-3 sm:gap-4"
                             >
-                              <div className="flex items-center gap-2">
-                                <BuildingStorefrontIcon className="h-4 w-4 text-gray-400" />
-                                <span className="text-sm text-gray-600">{priceInfo.store.name}</span>
-                              </div>
-                              <div className="flex items-center gap-4 mt-2 sm:mt-0">
-                                <div className="flex items-center gap-1 bg-red-50 px-2 py-1 rounded-md">
-                                <ArrowTrendingUpIcon className="h-4 w-3 text-red-600" />
-                                  <span className="text-xs font-medium text-red-600">
-                                    最安値 +¥{(priceInfo.price - product.prices[0].price).toLocaleString()}
-                                  </span>
+                              {/* 店舗情報 */}
+                              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
+                                <div className="flex items-center gap-1.5 text-gray-700">
+                                  <Storefront weight="duotone" className="h-5 w-5 text-orange-400" />
+                                  <span className="font-medium">{price.store.name}</span>
                                 </div>
-                                <div className="flex items-center gap-1">
-                                  <CurrencyYenIcon className="h-4 w-4 text-gray-400" />
-                                  <span className="text-sm text-gray-900 font-medium">
-                                    {priceInfo.price.toLocaleString()}
-                                  </span>
-                                </div>
-                                <div className="flex items-center gap-1">
-                                  <CalendarIcon className="h-4 w-4 text-gray-400" />
-                                  <span className="text-xs text-gray-500">
-                                    {dayjs(priceInfo.updatedAt).format('YYYY/MM/DD')}
-                                  </span>
+                                <div className="flex items-center gap-1.5 text-gray-500 text-sm">
+                                  <Calendar weight="duotone" className="h-4 w-4 text-orange-400" />
+                                  <span>{dayjs(price.updatedAt).format('YYYY/MM/DD')}</span>
                                 </div>
                               </div>
-                            </div>
-                          ))
-                        )}
+
+                              {/* 価格情報 */}
+                              <div className="flex items-center gap-3 justify-end sm:justify-start ml-auto">
+                                {/* 価格差バッジ */}
+                                {priceDiff > 0 && (
+                                  <div className={twMerge(
+                                    "flex items-center gap-1",
+                                    "px-2 py-1 rounded-full",
+                                    "text-xs font-medium whitespace-nowrap",
+                                    "bg-red-50 text-red-700 border border-red-200"
+                                  )}>
+                                    <ArrowTrendingUpIcon className="h-3 w-3" />
+                                    <span>+¥{priceDiff.toLocaleString()}</span>
+                                  </div>
+                                )}
+                                {/* 価格表示 */}
+                                <div className="flex items-center gap-1">
+                                  <CurrencyJpy weight="duotone" className="h-5 w-5 text-orange-500" />
+                                  <span className="text-lg sm:text-xl font-bold text-orange-500 whitespace-nowrap">
+                                    {price.price.toLocaleString()}
+                                  </span>
+                                </div>
+                              </div>
+                            </motion.div>
+                          );
+                        })}
+
+                        {/* 商品情報の詳細 */}
+                        <div className="mt-4 pt-4 border-t border-orange-100">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                            {product.makerName && (
+                              <div className="flex items-center gap-2 text-gray-600 text-sm sm:text-base">
+                                <BuildingStorefrontIcon className="h-5 w-5 text-orange-400 flex-shrink-0" />
+                                <span className="truncate">メーカー: {product.makerName}</span>
+                              </div>
+                            )}
+                            {product.brandName && (
+                              <div className="flex items-center gap-2 text-gray-600 text-sm sm:text-base">
+                                <TagIcon className="h-5 w-5 text-orange-400 flex-shrink-0" />
+                                <span className="truncate">ブランド: {product.brandName}</span>
+                              </div>
+                            )}
+                            {product.barcode && (
+                              <div className="flex items-center gap-2 text-gray-600 text-sm sm:text-base">
+                                <Barcode weight="duotone" className="h-5 w-5 text-orange-400 flex-shrink-0" />
+                                <span className="truncate">バーコード: {product.barcode}</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </div>
-              )))}
-            </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          ))
+        )}
       </div>
 
-      {/* Navigation Menu */}
-      <Menu as="div" className="fixed bottom-6 left-6">
-        <Menu.Button className="p-4 bg-indigo-600 text-white rounded-full shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-          <Bars3Icon className="h-6 w-6" />
-        </Menu.Button>
-        <Menu.Items className="absolute left-0 bottom-16 w-48 bg-white rounded-lg shadow-lg divide-y divide-gray-100 overflow-hidden focus:outline-none">
-          <Menu.Item>
-            {({ active }) => (
-              <Link
-                href="/"
-                className={`flex items-center px-4 py-3 text-sm ${
-                  active ? 'bg-indigo-50 text-indigo-600' : 'text-gray-700'
-                }`}
-              >
-                <HomeIcon className="h-5 w-5 mr-3" />
-                一覧
-              </Link>
-            )}
-          </Menu.Item>
-          <Menu.Item>
-            {({ active }) => (
-              <button
-                onClick={() => setIsStoreModalOpen(true)}
-                className={`flex items-center w-full px-4 py-3 text-sm ${
-                  active ? 'bg-indigo-50 text-indigo-600' : 'text-gray-700'
-                }`}
-              >
-                <BuildingStorefrontIcon className="h-5 w-5 mr-3" />
-                店舗追加
-              </button>
-            )}
-          </Menu.Item>
-        </Menu.Items>
-      </Menu>
+        <>
+        {/* メニューボタン - 常に左下に固定 */}
+        <motion.div 
+          className="fixed bottom-6 left-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+        >
+          <Menu as="div" className="relative">
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Menu.Button className="p-4 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-xl shadow-lg hover:from-orange-600 hover:to-amber-600 focus:outline-none focus:ring-2 focus:ring-orange-500/20 transition-all duration-200">
+                <List weight="bold" className="h-6 w-6" />
+              </Menu.Button>
+            </motion.div>
+
+            <Transition
+              as={Fragment}
+              enter="transition ease-out duration-200"
+              enterFrom="opacity-0 translate-y-1"
+              enterTo="opacity-100 translate-y-0"
+              leave="transition ease-in duration-150"
+              leaveFrom="opacity-100 translate-y-0"
+              leaveTo="opacity-0 translate-y-1"
+            >
+              <Menu.Items className="absolute left-0 bottom-16 w-48 bg-white rounded-xl shadow-xl divide-y divide-orange-100 overflow-hidden focus:outline-none border border-orange-100">
+                <Menu.Item>
+                  {({ active }) => (
+                    <Link
+                      href="/"
+                      className={`flex items-center px-4 py-3 text-sm ${
+                        active ? 'bg-orange-50 text-orange-600' : 'text-gray-700'
+                      }`}
+                    >
+                      <House weight="duotone" className="h-5 w-5 mr-3" />
+                      一覧
+                    </Link>
+                  )}
+                </Menu.Item>
+                <Menu.Item>
+                  {({ active }) => (
+                    <button
+                      onClick={() => setIsStoreModalOpen(true)}
+                      className={`flex items-center w-full px-4 py-3 text-sm ${
+                        active ? 'bg-orange-50 text-orange-600' : 'text-gray-700'
+                      }`}
+                    >
+                      <Storefront weight="duotone" className="h-5 w-5 mr-3" />
+                      店舗追加
+                    </button>
+                  )}
+                </Menu.Item>
+              </Menu.Items>
+            </Transition>
+          </Menu>
+        </motion.div>
+
+        {/* トップへ戻るボタン - 右下に固定 */}
+        <motion.button
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className={twMerge(
+            "fixed bottom-6 right-6",
+            "p-4 bg-white text-orange-500",
+            "rounded-xl shadow-lg",
+            "border border-orange-100",
+            "hover:bg-orange-50",
+            "focus:outline-none focus:ring-2 focus:ring-orange-500/20",
+            "transition-all duration-200",
+            // 200px以上スクロールした時のみ表示
+            scrollY > 200 ? "opacity-100" : "opacity-0 pointer-events-none"
+          )}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: scrollY > 200 ? 1 : 0, y: 0 }}
+          transition={{ duration: 0.2 }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <CaretUp weight="bold" className="h-6 w-6" />
+        </motion.button>
+      </>
+
 
       {/* Modals */}
       <AddProductModal
@@ -671,7 +830,7 @@ useEffect(() => {
         pauseOnHover
         theme="light"
       />
-    </div>
+      </div>
     </div>
   );
 };
