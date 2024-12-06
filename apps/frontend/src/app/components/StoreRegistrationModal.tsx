@@ -70,14 +70,15 @@ const StoreRegistrationModal: FC<Props> = ({ isOpen, onClose }) => {
           <XMarkIcon className="h-5 w-5 text-gray-500" />
         </button>
 
-        <div className="flex flex-col items-center gap-4">
-          <div className="flex items-center justify-center w-12 h-12 bg-indigo-100 rounded-full">
-            <BuildingStorefrontIcon className="h-6 w-6 text-indigo-600" />
+        { /* Header */ }
+        <div className="flex flex-col items-center gap-4 pb-6 border-b border-gray-100">
+          <div className="flex items-center justify-center w-14 h-14 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl shadow-lg">
+            <BuildingStorefrontIcon className="h-7 w-7 text-white" />
           </div>
           <div className="flex flex-col items-center gap-1">
             <h2 
               id="store-registration-title"
-              className="text-2xl font-bold text-gray-900"
+              className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-emerald-800"
             >
               店舗追加
             </h2>
@@ -150,24 +151,6 @@ const StoreRegistrationModal: FC<Props> = ({ isOpen, onClose }) => {
 
             {/* フッターのボタン */}
             <div className="flex justify-end gap-3">
-              {/* 追加ボタン */}
-              <button
-                type="submit"
-                className={twMerge(
-                  "inline-flex items-center",
-                  "px-4 py-2",
-                  "bg-blue-600 text-white",
-                  "border border-transparent rounded-lg",
-                  "outline-none",
-                  "hover:bg-blue-700",
-                  "focus:border-transparent",
-                  "focus:ring-1 focus:ring-blue-500/30",
-                  "focus:shadow-[0_0_0_4px_rgba(59,130,246,0.1)]",
-                  "transition-all duration-200"
-                )}
-              >
-                追加
-              </button>
               {/* キャンセルボタン */}
               <button
                 type="button"
@@ -186,6 +169,24 @@ const StoreRegistrationModal: FC<Props> = ({ isOpen, onClose }) => {
                 )}
               >
                 キャンセル
+              </button>
+              {/* 追加ボタン */}
+              <button
+                type="submit"
+                className={twMerge(
+                  "inline-flex items-center",
+                  "px-4 py-2",
+                  "bg-blue-600 text-white",
+                  "border border-transparent rounded-lg",
+                  "outline-none",
+                  "hover:bg-blue-700",
+                  "focus:border-transparent",
+                  "focus:ring-1 focus:ring-blue-500/30",
+                  "focus:shadow-[0_0_0_4px_rgba(59,130,246,0.1)]",
+                  "transition-all duration-200"
+                )}
+              >
+                追加
               </button>
             </div>
           </div>

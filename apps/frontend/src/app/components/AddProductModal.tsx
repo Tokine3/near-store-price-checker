@@ -152,9 +152,20 @@ const AddProductModal: React.FC<Props> = ({
       ariaHideApp={false}
     >
       <div className="flex flex-col gap-6">
-        <h2 className="text-2xl font-bold text-center text-gray-900">
-          {isRegistered ? '価格情報の追加' : '新規商品登録'}
-        </h2>
+        {/* ヘッダー部分 */}
+        <div className="flex flex-col items-center gap-4 pb-6 border-b border-gray-100">
+          <div className="flex items-center justify-center w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg">
+            <BuildingStorefrontIcon className="h-7 w-7 text-white" />
+          </div>
+          <div className="flex flex-col items-center gap-1">
+            <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-blue-800">
+              {isRegistered ? '価格情報の追加' : '新規商品登録'}
+            </h2>
+            <p className="text-sm text-gray-500">
+              {isRegistered ? '商品の価格情報を更新します' : '新しい商品を登録します'}
+            </p>
+          </div>
+        </div>
         
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
           {/* 商品情報表示部分 */}

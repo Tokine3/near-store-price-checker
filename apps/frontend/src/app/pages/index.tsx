@@ -15,7 +15,7 @@ import { HomeIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
 import dayjs from 'dayjs';
-import { ArrowTrendingUpIcon, CheckIcon, ChevronDownIcon, ChevronUpDownIcon, CurrencyYenIcon, PhotoIcon } from '@heroicons/react/20/solid';
+import { ArrowTrendingUpIcon, CheckIcon, ChevronDownIcon, ChevronUpDownIcon, CurrencyYenIcon, PhotoIcon, ShoppingCartIcon, TagIcon } from '@heroicons/react/20/solid';
 
 type BarcodeResult = {
   text: string;
@@ -229,19 +229,29 @@ useEffect(() => {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-white to-purple-100">
-      {/* Header */}
-      <div className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <h1 className="text-3xl font-bold text-indigo-600 text-center">
-            商品価格チェッカー
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-amber-50">
+    <div className="container mx-auto px-4 pt-8 pb-8">
+      {/* ヘッダー部分 */}
+      <div className="flex flex-col items-center gap-3 pb-6 mb-8 border-b border-orange-100">
+        {/* アイコンを買い物かごと価格タグの組み合わせに */}
+        <div className="flex items-center justify-center h-12 px-4 bg-gradient-to-r from-orange-400 to-amber-500 rounded-lg shadow-md">
+          <div className="flex items-center gap-2">
+            <ShoppingCartIcon className="h-6 w-6 text-white" />
+            <TagIcon className="h-5 w-5 text-white/80" />
+          </div>
+        </div>
+        <div className="flex flex-col items-center">
+          <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-orange-500 to-amber-600">
+            お値段ナビ！
           </h1>
+          <p className="text-xs text-orange-600/70 mt-0.5">
+            いろんな商品の最安値や店舗ごとの価格を見ることができます
+          </p>
         </div>
       </div>
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        
         {/* 検索フォーム */}
         <div className="max-w-3xl mx-auto mb-8">
           {/* 検索フォームと店舗選択 */}
@@ -661,6 +671,7 @@ useEffect(() => {
         pauseOnHover
         theme="light"
       />
+    </div>
     </div>
   );
 };

@@ -82,69 +82,97 @@ const BarCodeReaderModal: FC<Props> = ({
             
             <div className="fixed inset-0 flex items-start justify-center overflow-y-auto">
                 <div className="w-full max-w-2xl mx-auto mt-20 p-4">
-                    <Dialog.Panel 
-                        className={twMerge(
-                            "relative w-full max-w-2xl",
-                            "bg-white rounded-xl shadow-xl",
-                            "p-6",
-                            "transform transition-all",
-                        )}
+                <Dialog.Panel 
+                    className={twMerge(
+                        "relative w-full max-w-2xl",
+                        "bg-white rounded-xl shadow-xl",
+                        "p-6",
+                        "transform transition-all",
+                    )}
                     >
-                        <button
-                            type="button"
-                            onClick={handleClose}
-                            className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100 transition-colors"
-                            aria-label="閉じる"
-                        >
-                            <XMarkIcon className="w-5 h-5 text-gray-500" />
-                        </button>
+                    {/* 閉じるボタン */}
+                    <button
+                        type="button"
+                        onClick={handleClose}
+                        className={twMerge(
+                        "absolute -top-2 -right-2",
+                        "p-2 rounded-full",
+                        "bg-white text-red-600",
+                        "border border-red-200",
+                        "outline-none",
+                        "hover:bg-red-50",
+                        "focus:border-transparent",
+                        "focus:ring-1 focus:ring-red-500/30",
+                        "focus:shadow-[0_0_0_4px_rgba(239,68,68,0.1)]",
+                        "transition-shadow duration-200",
+                        "shadow-md"
+                        )}
+                        aria-label="閉じる"
+                    >
+                        <XMarkIcon className="h-5 w-5" />
+                    </button>
 
-                        <Dialog.Title className="text-lg font-medium text-gray-900 mb-4">
+                    {/* ヘッダー部分 */}
+                    <div className="flex flex-col items-center gap-4 pb-6 mb-6 border-b border-gray-200">
+                        <div className="flex items-center justify-center w-14 h-14 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl shadow-lg">
+                        <CameraIcon className="h-7 w-7 text-white" />
+                        </div>
+                        <div className="flex flex-col items-center gap-1">
+                        <Dialog.Title className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-indigo-800">
                             バーコードをスキャン
                         </Dialog.Title>
-
-                        <div 
-                            className={twMerge(
-                                "relative w-full h-48",
-                                "bg-gray-100 rounded-lg",
-                                "overflow-hidden"
-                            )}
-                            role="region"
-                            aria-label="カメラビュー"
-                        >
-                            {isLoading && (
-                                <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-100 z-10">
-                                    <CameraIcon className="w-8 h-8 text-gray-400 animate-pulse mb-2" />
-                                    <p className="text-sm text-gray-500">カメラを起動しています...</p>
-                                </div>
-                            )}
-
-                            {!isLoading && !hasPermission && (
-                                <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-100">
-                                    <CameraIcon className="w-8 h-8 text-red-400 mb-2" />
-                                    <p className="text-sm text-red-500">カメラへのアクセスが許可されていません</p>
-                                </div>
-                            )}
-
-                            {shouldShowScanner && hasPermission && (
-                                <div className="absolute inset-0">
-                                    <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
-                                        <BarcodeScannerComponent
-                                            width="100%"
-                                            height="100%"
-                                            onUpdate={(error: unknown, result?: Result) => {
-                                                if (result) {
-                                                onDetected(error, { text: result.getText() });
-                                                } else {
-                                                onDetected(error, null);
-                                                }
-                                            }}
-                                            facingMode="environment"
-                                        />
-                                    </div>
-                                </div>
-                            )}
+                        <p className="text-sm text-gray-500">
+                            商品のバーコードをカメラにかざしてください
+                        </p>
                         </div>
+                    </div>
+
+                    {/* カメラビュー部分 */}
+                    <div 
+                        className={twMerge(
+                        "relative w-full",
+                        "bg-gray-50 rounded-xl",
+                        "border border-gray-200",
+                        "overflow-hidden",
+                        "shadow-inner",
+                        "h-64" // カメラビューの高さを増加
+                        )}
+                        role="region"
+                        aria-label="カメラビュー"
+                    >
+                        {isLoading && (
+                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-50 z-10">
+                            <CameraIcon className="w-8 h-8 text-gray-400 animate-pulse mb-2" />
+                            <p className="text-sm text-gray-500">カメラを起動しています...</p>
+                        </div>
+                        )}
+
+                        {!isLoading && !hasPermission && (
+                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-50">
+                            <CameraIcon className="w-8 h-8 text-red-400 mb-2" />
+                            <p className="text-sm text-red-500">カメラへのアクセスが許可されていません</p>
+                        </div>
+                        )}
+
+                        {shouldShowScanner && hasPermission && (
+                        <div className="absolute inset-0">
+                            <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
+                            <BarcodeScannerComponent
+                                width="100%"
+                                height="100%"
+                                onUpdate={(error: unknown, result?: Result) => {
+                                if (result) {
+                                    onDetected(error, { text: result.getText() });
+                                } else {
+                                    onDetected(error, null);
+                                }
+                                }}
+                                facingMode="environment"
+                            />
+                            </div>
+                        </div>
+                        )}
+                    </div>
                     </Dialog.Panel>
                 </div>
             </div>
