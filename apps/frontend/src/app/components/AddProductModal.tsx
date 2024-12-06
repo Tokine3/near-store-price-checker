@@ -201,7 +201,7 @@ const AddProductModal: React.FC<Props> = ({
           {/* 店舗選択 */}
           <div className="flex flex-col gap-2">
             <label className="text-sm font-medium text-gray-700">
-              店舗を選択
+              店舗
             </label>
             <Listbox value={selectedStoreId} onChange={handleStoreSelect}>
               <div className="relative mt-1">
