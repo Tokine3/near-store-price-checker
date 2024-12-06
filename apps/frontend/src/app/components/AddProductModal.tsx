@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 import { twMerge } from 'tailwind-merge';
 import StoreRegistrationModal from './StoreRegistrationModal';
 import dayjs from 'dayjs';
+import { ScannedProduct } from '../pages';
 
 
 
@@ -44,7 +45,7 @@ type Props = {
   /** 商品が登録済みかどうか */
   isRegistered?: boolean;
   /** スキャンした商品の価格情報 */
-  scannedProduct?: ProductPrice[];
+  scannedProduct: ScannedProduct | null;
   /** 店舗選択時のコールバック */
   onStoreSelect?: (storeId: string) => void;
 }
@@ -99,7 +100,9 @@ const AddProductModal: React.FC<Props> = ({
     setSelectedStoreId(storeId);
     onStoreSelect(storeId);
 
-    const existingPrice = scannedProduct?.find(
+    console.log('scannedProduct at handleStoreSelect', scannedProduct);
+
+    const existingPrice = scannedProduct?.prices?.find(
       (productStore) => productStore.store.id === Number(storeId)
     );
 
@@ -202,45 +205,64 @@ const AddProductModal: React.FC<Props> = ({
             </label>
             <Listbox value={selectedStoreId} onChange={handleStoreSelect}>
               <div className="relative mt-1">
-                <Listbox.Button className="relative w-full cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left border border-gray-300 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500">
-                  <span className="block truncate text-base font-medium text-[#696969]">
-                    {selectedStoreId
-                      ? stores.find((store) => store.id === selectedStoreId)?.name
-                      : '店舗を選択してください'}
-                  </span>
-                  <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                    <ChevronUpDownIcon
-                      className="h-5 w-5 text-gray-400"
-                      aria-hidden="true"
-                    />
-                  </span>
-                </Listbox.Button>
+              <Listbox.Button className={twMerge(
+                "relative w-full cursor-default",
+                "rounded-lg bg-white py-2.5 pl-10",
+                "pr-10 text-left",
+                "border border-gray-200",
+                "outline-none",
+                "focus:border-transparent",
+                "focus:ring-1 focus:ring-blue-500/30",
+                "focus:shadow-[0_0_0_4px_rgba(59,130,246,0.1)]",
+                "transition-shadow duration-200",
+                "shadow-sm"
+              )}>
+                <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                  <BuildingStorefrontIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                </span>
+                <span className="block truncate text-base font-medium text-gray-700">
+                  {selectedStoreId
+                    ? stores.find((store) => store.id === selectedStoreId)?.name
+                    : '店舗を選択してください'}
+                </span>
+                <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                  <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                </span>
+              </Listbox.Button>
                 <Transition
                   as={Fragment}
                   leave="transition ease-in duration-100"
                   leaveFrom="opacity-100"
                   leaveTo="opacity-0"
                 >
-                  <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm z-50">
+                  <Listbox.Options className={twMerge(
+                    "absolute mt-1 max-h-60 w-full overflow-auto",
+                    "rounded-lg bg-white py-1",
+                    "text-base shadow-lg",
+                    "ring-1 ring-black ring-opacity-5",
+                    "focus:outline-none",
+                    "sm:text-sm",
+                    "z-50"
+                  )}>
                     {stores.map((store) => (
                       <Listbox.Option
                         key={store.id}
-                        className={({ active }) =>
-                          `relative cursor-default select-none py-2 pl-10 pr-4 ${
-                            active ? 'bg-indigo-100 text-indigo-900' : 'text-gray-900'
-                          }`
-                        }
                         value={store.id}
+                        className={({ active }) => twMerge(
+                          "relative cursor-default select-none",
+                          "py-2.5 pl-10 pr-4",
+                          active ? "bg-blue-50 text-blue-900" : "text-gray-900",
+                          "transition-colors duration-100"
+                        )}
                       >
                         {({ selected }) => (
                           <>
-                            <span
-                              className={`block truncate ${
-                                selected ? 'font-medium' : 'font-normal'
-                              }`}
-                            >
-                              {store.name}
-                            </span>
+                          <span className={twMerge(
+                            "block truncate",
+                            selected ? "font-medium" : "font-normal"
+                          )}>
+                            {store.name}
+                          </span>
                             {selected ? (
                               <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-indigo-600">
                                 <CheckIcon className="h-5 w-5" aria-hidden="true" />
@@ -261,6 +283,7 @@ const AddProductModal: React.FC<Props> = ({
             <label className="text-sm font-medium text-gray-700">
               価格
             </label>
+            {/* 価格入力フォーム */}
             <div className="relative">
               <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                 <CurrencyYenIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
@@ -270,23 +293,36 @@ const AddProductModal: React.FC<Props> = ({
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
                 className={twMerge(
-                  "w-full rounded-md border-gray-300",
-                  "pl-10 py-2",
-                  "text-base font-medium text-[#696969]",
-                  "focus:border-indigo-500 focus:ring-indigo-500 focus:ring-2",
-                  "placeholder:text-base placeholder:font-medium placeholder:text-[#696969]",
-                  "transition-colors duration-200",
+                  "w-full rounded-lg",
+                  "pl-10 py-2.5",
+                  "text-base font-medium text-gray-700",
+                  "bg-white",
+                  "border border-gray-200",
+                  "outline-none",
+                  "focus:border-transparent",
+                  "focus:ring-1 focus:ring-blue-500/30",
+                  "focus:shadow-[0_0_0_4px_rgba(59,130,246,0.1)]",
+                  "placeholder:text-gray-400",
+                  "transition-shadow duration-200",
                   "[appearance:textfield]",
                   "[&::-webkit-outer-spin-button]:appearance-none",
-                  "[&::-webkit-inner-spin-button]:appearance-none"
+                  "[&::-webkit-inner-spin-button]:appearance-none",
+                  "shadow-sm"
                 )}
                 placeholder="0"
                 required
               />
             </div>
             
+            {/* 区切り線 */}
+            <div className="relative my-2">
+              <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                <div className="w-full border-t border-gray-200" />
+              </div>
+            </div>
+            
             {/* 既存の価格情報表示 */}
-            <div className="p-3 bg-gray-50 rounded-md">
+            <div className="p-4 bg-gray-50 rounded-md border border-gray-100">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1">
                   <span className="text-sm text-gray-500">現在の登録価格：</span>
@@ -309,26 +345,62 @@ const AddProductModal: React.FC<Props> = ({
 
           {/* フッター部分 */}
           <div className="flex justify-between items-center">
+            {/* 店舗追加ボタン - セカンダリースタイル */}
             <button
               type="button"
               onClick={() => setIsStoreModalOpen(true)}
-              className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-blue-500 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className={twMerge(
+                "inline-flex items-center",
+                "px-4 py-2",
+                "bg-white text-gray-700",
+                "border border-gray-200 rounded-lg",
+                "outline-none",
+                "hover:bg-gray-50",
+                "focus:border-transparent",
+                "focus:ring-1 focus:ring-blue-500/30",
+                "focus:shadow-[0_0_0_4px_rgba(59,130,246,0.1)]",
+                "transition-shadow duration-200"
+              )}
             >
               <BuildingStorefrontIcon className="h-5 w-5 mr-2 text-gray-400" />
               店舗追加
             </button>
 
             <div className="flex gap-3">
+              {/* キャンセルボタン - デンジャースタイル */}
               <button
                 type="button"
                 onClick={handleClose}
-                className="inline-flex justify-center px-4 py-2 text-sm font-medium text-blue-500 bg-white border border-blue-500 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                className={twMerge(
+                  "inline-flex items-center",
+                  "px-4 py-2",
+                  "bg-white text-gray-600",
+                  "border border-gray-200 rounded-lg",
+                  "outline-none",
+                  "hover:bg-gray-50",
+                  "focus:border-transparent",
+                  "focus:ring-1 focus:ring-red-500/30",
+                  "focus:shadow-[0_0_0_4px_rgba(239,68,68,0.1)]",
+                  "transition-shadow duration-200"
+                )}
               >
                 キャンセル
               </button>
+              {/* 登録/更新ボタン - プライマリースタイル */}
               <button
                 type="submit"
-                className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                className={twMerge(
+                  "inline-flex items-center",
+                  "px-4 py-2",
+                  "bg-blue-600 text-white",
+                  "border border-transparent rounded-lg",
+                  "outline-none",
+                  "hover:bg-blue-700",
+                  "focus:border-transparent",
+                  "focus:ring-1 focus:ring-blue-500/30",
+                  "focus:shadow-[0_0_0_4px_rgba(59,130,246,0.1)]",
+                  "transition-all duration-200"
+                )}
               >
                 {productStorePrice ? '更新' : '登録'}
               </button>

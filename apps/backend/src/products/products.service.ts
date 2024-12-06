@@ -193,7 +193,6 @@ export class ProductsService {
           orderBy: {
             price: 'asc',
           },
-          take: 1,
         },
       },
     });
@@ -209,7 +208,7 @@ export class ProductsService {
         makerName: product.makerName,
         brandName: product.brandName,
         barcode: product.barcode,
-        prices: product.prices[0]?.price,
+        prices: product.prices ?? [],
         store: product.prices[0]?.storeId,
         isRegistered: true, // DBには無いProps True,Falseで登録処理の分岐を行う
       };

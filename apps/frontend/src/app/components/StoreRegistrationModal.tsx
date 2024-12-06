@@ -105,12 +105,18 @@ const StoreRegistrationModal: FC<Props> = ({ isOpen, onClose }) => {
                 value={storeName}
                 onChange={(e) => setStoreName(e.target.value)}
                 className={twMerge(
-                  "w-full rounded-md border-gray-300",
-                  "pl-10 py-3",
-                  "focus:border-indigo-500 focus:ring-indigo-500 focus:ring-2",
+                  "w-full rounded-lg",
+                  "pl-10 py-2.5",
+                  "text-base font-medium text-gray-700",
+                  "bg-white",
+                  "border border-gray-200",
+                  "outline-none",
+                  "focus:border-transparent",
+                  "focus:ring-1 focus:ring-blue-500/30",
+                  "focus:shadow-[0_0_0_4px_rgba(59,130,246,0.1)]",
                   "placeholder:text-gray-400",
-                  "transition-colors",
-                  "text-[#696969]"
+                  "transition-shadow duration-200",
+                  "shadow-sm"
                 )}
                 placeholder="例：やまだスーパー"
                 required
@@ -119,34 +125,69 @@ const StoreRegistrationModal: FC<Props> = ({ isOpen, onClose }) => {
             </div>
           </div>
 
+          {/* 画面右上の閉じるボタン */}
           <div className="flex justify-end gap-3">
             <button
               type="button"
               onClick={resetAndClose}
               className={twMerge(
-                "px-4 py-2",
-                "text-sm font-medium text-gray-700",
-                "bg-white border border-gray-300 rounded-md",
-                "hover:bg-gray-50",
-                "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500",
-                "transition-colors"
+                "absolute -top-2 -right-2",
+                "p-2 rounded-full",
+                "bg-white text-red-600",
+                "border border-red-200",
+                "outline-none",
+                "hover:bg-red-50",
+                "focus:border-transparent",
+                "focus:ring-1 focus:ring-red-500/30",
+                "focus:shadow-[0_0_0_4px_rgba(239,68,68,0.1)]",
+                "transition-shadow duration-200",
+                "shadow-md"
               )}
+              aria-label="閉じる"
             >
-              キャンセル
+              <XMarkIcon className="h-5 w-5" />
             </button>
-            <button
-              type="submit"
-              className={twMerge(
-                "px-4 py-2",
-                "text-sm font-medium text-white",
-                "bg-indigo-600 rounded-md",
-                "hover:bg-indigo-700",
-                "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500",
-                "transition-colors"
-              )}
-            >
-              追加
-            </button>
+
+            {/* フッターのボタン */}
+            <div className="flex justify-end gap-3">
+              {/* 追加ボタン */}
+              <button
+                type="submit"
+                className={twMerge(
+                  "inline-flex items-center",
+                  "px-4 py-2",
+                  "bg-blue-600 text-white",
+                  "border border-transparent rounded-lg",
+                  "outline-none",
+                  "hover:bg-blue-700",
+                  "focus:border-transparent",
+                  "focus:ring-1 focus:ring-blue-500/30",
+                  "focus:shadow-[0_0_0_4px_rgba(59,130,246,0.1)]",
+                  "transition-all duration-200"
+                )}
+              >
+                追加
+              </button>
+              {/* キャンセルボタン */}
+              <button
+                type="button"
+                onClick={resetAndClose}
+                className={twMerge(
+                  "inline-flex items-center",
+                  "px-4 py-2",
+                  "bg-white text-gray-600",
+                  "border border-gray-200 rounded-lg",
+                  "outline-none",
+                  "hover:bg-gray-50",
+                  "focus:border-transparent",
+                  "focus:ring-1 focus:ring-red-500/30",
+                  "focus:shadow-[0_0_0_4px_rgba(239,68,68,0.1)]",
+                  "transition-shadow duration-200"
+                )}
+              >
+                キャンセル
+              </button>
+            </div>
           </div>
         </form>
       </div>

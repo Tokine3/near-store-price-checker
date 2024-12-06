@@ -21,7 +21,7 @@ type BarcodeResult = {
   text: string;
 }
 
-type ProductPrice = {
+export type ProductPrice = {
   id: number;
   price: number;
   store: {
@@ -41,7 +41,7 @@ type Product = {
   isRegistered?: boolean;
 }
 
-type ScannedProduct = {
+export type ScannedProduct = {
   name: string;
   makerName?: string;
   brandName?: string;
@@ -179,13 +179,20 @@ const fetchStores = async () => {
       const response = await axios.get(`http://localhost:8000/products/barcode/${result.text}`);
       const productData = response.data;
 
-      setScannedProduct({
+      console.log('productData:', productData);
+
+      const newScannedProduct = {
         name: productData.name,
         barcode: result.text,
         brandName: productData.brandName,
         makerName: productData.makerName,
+        prices: productData.prices,
         isRegistered: productData.isRegistered
-      });
+      };
+  
+      setScannedProduct(newScannedProduct);
+
+      console.log('Scanned product:', scannedProduct);
 
       setIsModalOpen(true);
     } catch (error) {
@@ -214,6 +221,11 @@ const fetchStores = async () => {
         setScannedProduct(null);
       };
     }, []);
+
+    // useEffect で状態変更を監視（デバッグ用）
+useEffect(() => {
+  console.log('scannedProduct updated:', scannedProduct);
+}, [scannedProduct]);
 
 
   return (
@@ -247,13 +259,17 @@ const fetchStores = async () => {
                 placeholder="商品名を入力"
                 className={twMerge(
                   "block w-full",
-                  "pl-10 pr-3 py-2",
-                  "text-base text-gray-900",
-                  "placeholder:text-gray-400",
+                  "pl-10 pr-3 py-2.5",
+                  "text-base font-medium text-gray-700",
                   "bg-white",
-                  "border border-gray-200 rounded-lg", // ボーダーとボーダーラディウス
-                  "focus:ring-0", // フォーカス時のスタイル
-                  "shadow-sm", // シャドウ
+                  "border border-gray-200 rounded-lg",
+                  "outline-none",
+                  "focus:border-transparent",
+                  "focus:ring-1 focus:ring-blue-500/30",
+                  "focus:shadow-[0_0_0_4px_rgba(59,130,246,0.1)]",
+                  "placeholder:text-gray-400",
+                  "transition-shadow duration-200",
+                  "shadow-sm"
                 )}
               />
             </div>
@@ -262,7 +278,21 @@ const fetchStores = async () => {
             <div className="relative max-w-lg mx-auto">
               <Listbox value={selectedSearchStoreId} onChange={setSelectedSearchStoreId}>
                 <div className="relative mt-1">
-                  <Listbox.Button className="relative w-full cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm">
+                  <Listbox.Button className={twMerge(
+                    "relative w-full cursor-default",
+                    "rounded-lg bg-white py-2.5 pl-10",
+                    "pr-10 text-left",
+                    "border border-gray-200",
+                    "outline-none",
+                    "focus:border-transparent",
+                    "focus:ring-1 focus:ring-blue-500/30",
+                    "focus:shadow-[0_0_0_4px_rgba(59,130,246,0.1)]",
+                    "transition-shadow duration-200",
+                    "shadow-sm"
+                  )}>
+                    <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                      <BuildingStorefrontIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                    </span>
                     <span className="block truncate text-base font-medium text-gray-700">
                       {stores.find((store) => store.id === selectedSearchStoreId)?.name || '店舗を選択'}
                     </span>
@@ -276,30 +306,33 @@ const fetchStores = async () => {
                     leaveFrom="opacity-100"
                     leaveTo="opacity-0"
                   >
-                    <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                  <Listbox.Options className={twMerge(
+                    "absolute mt-1 max-h-60 w-full overflow-auto",
+                    "rounded-lg bg-white py-1",
+                    "text-base shadow-lg",
+                    "ring-1 ring-black ring-opacity-5",
+                    "focus:outline-none",
+                    "sm:text-sm",
+                    "z-50"
+                  )}>
                       {stores.map((store) => (
                         <Listbox.Option
                           key={store.id}
                           value={store.id}
-                          className={({ active }) =>
-                            twMerge(
-                              'relative cursor-default select-none py-2 pl-3 pr-9',
-                              active ? 'bg-indigo-600 text-white' : 'text-gray-900'
-                            )
-                          }
+                          className={({ active }) => twMerge(
+                            "relative cursor-default select-none",
+                            "py-2.5 pl-10 pr-4", 
+                            active ? "bg-blue-50 text-blue-900" : "text-gray-900",
+                            "transition-colors duration-100"
+                          )}
                         >
-                          {({ active, selected }) => (
+                          {({ selected }) => (
                             <>
                               <span className={`block truncate ${selected ? 'font-semibold' : 'font-normal'}`}>
                                 {store.name}
                               </span>
                               {selected && (
-                                <span
-                                  className={twMerge(
-                                    'absolute inset-y-0 right-0 flex items-center pr-4',
-                                    active ? 'text-white' : 'text-indigo-600'
-                                  )}
-                                >
+                                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-blue-600">
                                   <CheckIcon className="h-5 w-5" aria-hidden="true" />
                                 </span>
                               )}
@@ -314,16 +347,38 @@ const fetchStores = async () => {
             </div>
           
             <div className="mt-4 flex gap-3 justify-center">
-              <button
-                onClick={handleSearch}
-                className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
+            <button
+              onClick={handleSearch}
+              className={twMerge(
+                "inline-flex items-center",
+                "px-4 py-2",
+                "bg-blue-600 text-white", // 背景色を青に、テキストを白に変更
+                "border border-transparent rounded-lg", // ボーダーを透明に
+                "outline-none",
+                "hover:bg-blue-700", // ホバー時は少し濃い青に
+                "focus:border-transparent",
+                "focus:ring-1 focus:ring-blue-500/30",
+                "focus:shadow-[0_0_0_4px_rgba(59,130,246,0.1)]",
+                "transition-all duration-200" // hover時の背景色変更もスムーズに
+              )}
               >
                 <MagnifyingGlassIcon className="h-5 w-5 mr-2" />
                 検索
               </button>
               <button
                 onClick={() => setIsBarcodeReaderOpen(true)}
-                className="inline-flex items-center px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
+                className={twMerge(
+                  "inline-flex items-center",
+                  "px-4 py-2",
+                  "bg-white text-gray-700",
+                  "border border-gray-200 rounded-lg",
+                  "outline-none",
+                  "hover:bg-gray-50",
+                  "focus:border-transparent",
+                  "focus:ring-1 focus:ring-blue-500/30",
+                  "focus:shadow-[0_0_0_4px_rgba(59,130,246,0.1)]",
+                  "transition-shadow duration-200"
+                )}
               >
                 <QrCodeIcon className="h-5 w-5 mr-2" />
                 バーコード読取
@@ -575,7 +630,7 @@ const fetchStores = async () => {
         barcode={scannedProduct?.barcode || ''}
         onSubmit={handleSubmitProduct}
         isRegistered={scannedProduct?.isRegistered}
-        scannedProduct={searchResults.find(p => p.barcode === scannedProduct?.barcode)?.prices || []}
+        scannedProduct={scannedProduct}
         // selectedStorePrice={scannedProduct?.prices}
         // selectedStorePrice={scannedProduct?.prices?.find(
         //   price => price.store.id === parseInt(selectedStoreId)
