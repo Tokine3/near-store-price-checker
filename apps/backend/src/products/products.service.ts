@@ -151,6 +151,9 @@ export class ProductsService {
       },
     });
 
+    console.log('products', products);
+    console.log('storeId', storeId);
+
     // 店舗指定がある場合、その店舗が最安値の商品のみをフィルタリング
     const filteredProducts =
       storeId !== 'all'
@@ -195,6 +198,7 @@ export class ProductsService {
       },
     });
 
+    console.log('読み取ったJANコード：', barcode);
     console.log(product);
 
     if (product) {

@@ -17,11 +17,11 @@ import { twMerge } from 'tailwind-merge';
 import dayjs from 'dayjs';
 import { ArrowTrendingUpIcon, CheckIcon, ChevronDownIcon, ChevronUpDownIcon, CurrencyYenIcon, PhotoIcon } from '@heroicons/react/20/solid';
 
-interface BarcodeResult {
+type BarcodeResult = {
   text: string;
 }
 
-interface ProductPrice {
+type ProductPrice = {
   id: number;
   price: number;
   store: {
@@ -31,7 +31,7 @@ interface ProductPrice {
   updatedAt: string;
 }
 
-interface Product {
+type Product = {
   id: string;
   name: string;
   makerName?: string;
@@ -41,7 +41,7 @@ interface Product {
   isRegistered?: boolean;
 }
 
-interface ScannedProduct {
+type ScannedProduct = {
   name: string;
   makerName?: string;
   brandName?: string;
@@ -58,7 +58,7 @@ const HomePage: React.FC = () => {
   }, []);
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [products, setProducts] = useState<Product[]>([]);
+  const [searchResults, setSearchResults] = useState<Product[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [scannedProduct, setScannedProduct] = useState<ScannedProduct | null>(null);
   const [isStoreModalOpen, setIsStoreModalOpen] = useState(false);
@@ -112,16 +112,13 @@ const fetchStores = async () => {
   };
 
   const handleSubmitProduct = async (data: { storeId: number; price: number }) => {
+    if (!scannedProduct) {
+      toast.error('商品情報が見つかりません');
+      return;
+    }
+  
     try {
-      if (!scannedProduct) {
-        toast.error('商品情報が見つかりません');
-        return;
-      }
-
-      console.log('送信データ:', { scannedProduct, data }); // デバッグ用
-
       if (!scannedProduct.isRegistered) {
-        // 新規商品登録
         await axios.post('http://localhost:8000/products', {
           name: scannedProduct.name,
           makerName: scannedProduct.makerName,
@@ -131,16 +128,13 @@ const fetchStores = async () => {
           storeId: data.storeId,
         });
       } else {
-        console.log(scannedProduct);
-        // 価格情報の登録
         await axios.post(`http://localhost:8000/products/new-prices/${scannedProduct.barcode}`, {
           storeId: data.storeId,
           price: data.price,
         });
-        // 登録後に検索結果を更新
-        handleSearch();
+        await handleSearch();
       }
-
+  
       toast.success('商品情報を登録しました');
       setIsModalOpen(false);
       setScannedProduct(null);
@@ -156,28 +150,32 @@ const fetchStores = async () => {
   };
 
 // 検索処理
-const handleSearch = async () => {
-  try {
-    const storeQuery = selectedSearchStoreId !== '&storeId=all' ? `&storeId=${selectedSearchStoreId}` : '';
-    const response = await axios.get(`http://localhost:8000/products/search?term=${encodeURIComponent(searchTerm.trim())}${storeQuery}`);
-    console.log(response.data);
+  const handleSearch = async () => {
+    try {
+      const storeQuery = selectedSearchStoreId !== '&storeId=all' ? `&storeId=${selectedSearchStoreId}` : '';
+      const response = await axios.get<Product[]>(
+        `http://localhost:8000/products/search?term=${encodeURIComponent(searchTerm.trim())}${storeQuery}`
+      );
 
-    if (response.data.length === 0) {
-      setProducts([]);
-      return;
+      console.log(response.data);
+
+      if (response.data.length === 0) {
+        setSearchResults([]);
+      }
+      
+      setSearchResults(response.data);
+    } catch (error) {
+      console.error('Error searching products:', error);
+      toast.error('商品の検索に失敗しました');
     }
-    setProducts(response.data);
-  } catch (error) {
-    console.error('Error searching products:', error);
-  }
-};
+  };
 
   const handleBarcodeDetected = async (error: unknown, result?: BarcodeResult | null) => {
-    if (!result) return;
-    try {
-      // バーコードリーダーモーダルを先に閉じる
-      setIsBarcodeReaderOpen(false);
+    if (!result?.text) return;
+    
+    setIsBarcodeReaderOpen(false);
 
+    try {
       const response = await axios.get(`http://localhost:8000/products/barcode/${result.text}`);
       const productData = response.data;
 
@@ -189,15 +187,11 @@ const handleSearch = async () => {
         isRegistered: productData.isRegistered
       });
 
-      // モーダルを開く処理を追加
       setIsModalOpen(true);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         toast.error('商品が見つかりませんでした');
-        // エラー時はバーコードリーダーを再度開く
-        requestAnimationFrame(() => {
-          setIsBarcodeReaderOpen(true);
-        });
+        requestAnimationFrame(() => setIsBarcodeReaderOpen(true));
       } else {
         toast.error('エラーが発生しました');
       }
@@ -349,7 +343,7 @@ const handleSearch = async () => {
 
         {/* 商品一覧*/}
         <div className="space-y-4">
-          {products.length === 0 ? (
+          {searchResults.length === 0 ? (
             <div className="text-center py-8">
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
                 <BuildingStorefrontIcon className="h-8 w-8 text-gray-400" />
@@ -362,7 +356,7 @@ const handleSearch = async () => {
               </p>
             </div>
           ) : (
-            products.map((product: Product) => (
+            searchResults.map((product: Product) => (
               <div
                 key={product.id}
                 className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer"
@@ -581,7 +575,7 @@ const handleSearch = async () => {
         barcode={scannedProduct?.barcode || ''}
         onSubmit={handleSubmitProduct}
         isRegistered={scannedProduct?.isRegistered}
-        scannedProduct={products.find(p => p.barcode === scannedProduct?.barcode)?.prices || []}
+        scannedProduct={searchResults.find(p => p.barcode === scannedProduct?.barcode)?.prices || []}
         // selectedStorePrice={scannedProduct?.prices}
         // selectedStorePrice={scannedProduct?.prices?.find(
         //   price => price.store.id === parseInt(selectedStoreId)
