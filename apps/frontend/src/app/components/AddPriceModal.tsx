@@ -16,7 +16,6 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
   isOpen,
   onClose,
   productName,
-  barcode,
   onSubmit,
 }) => {
   const [store, setStore] = useState('');
