@@ -10,7 +10,7 @@ import {
     X,
     Warning,
     Barcode
-  } from '@phosphor-icons/react';
+} from '@phosphor-icons/react';
 
 type BarcodeResult = {
     text: string;
@@ -77,37 +77,37 @@ const BarCodeReaderModal: FC<Props> = ({
 
     return (
         <AnimatePresence>
-          {isOpen && (
-            <Dialog
-              open={isOpen}
-              onClose={handleClose}
-              className="relative z-50"
-            >
-              {/* オーバーレイ */}
-              <motion.div 
-                className="fixed inset-0 bg-black/30 backdrop-blur-sm" 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                aria-hidden="true" 
-              />
-              
-              {/* モーダルコンテンツ */}
-              <div className="fixed inset-0 flex items-start justify-center overflow-y-auto">
+            {isOpen && (
+                <Dialog
+                open={isOpen}
+                onClose={handleClose}
+                className="relative z-50"
+                >
+                    {/* オーバーレイ */}
+                    <motion.div 
+                        className="fixed inset-0 bg-black/30 backdrop-blur-sm" 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        aria-hidden="true" 
+                    />
+            
+            {/* モーダルコンテンツ */}
+            <div className="fixed inset-0 flex items-start justify-center overflow-y-auto">
                 <div className="w-full max-w-lg mx-auto mt-10 sm:mt-20 p-4">
-                  <Dialog.Panel>
+                    <Dialog.Panel>
                     <motion.div
-                      className={twMerge(
-                        "relative w-full",
-                        "bg-white rounded-2xl shadow-xl",
-                        "p-4 sm:p-6",
-                      )}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 20 }}
+                        className={twMerge(
+                            "relative w-full",
+                            "bg-white rounded-2xl shadow-xl",
+                            "p-4 sm:p-6",
+                        )}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 20 }}
                     >
                       {/* 閉じるボタン */}
-                      <motion.button
+                    <motion.button
                         type="button"
                         onClick={handleClose}
                         className={twMerge(
@@ -127,7 +127,7 @@ const BarCodeReaderModal: FC<Props> = ({
                         whileTap={{ scale: 0.95 }}
                         aria-label="閉じる"
                       >
-                        <X weight="bold" className="h-5 w-5" />
+                        <X weight="bold" size={20} />
                       </motion.button>
     
                       {/* ヘッダー部分 */}
@@ -138,7 +138,20 @@ const BarCodeReaderModal: FC<Props> = ({
                           animate={{ scale: 1 }}
                           transition={{ type: "spring", stiffness: 200, damping: 15 }}
                         >
-                          <Camera weight="duotone" className="h-6 sm:h-7 w-6 sm:w-7 text-white" />
+                          <div className="hidden sm:block">
+                            <Camera 
+                              size={28}
+                              weight="duotone"
+                              color="#FFFFFF"
+                            />
+                          </div>
+                          <div className="sm:hidden">
+                            <Camera 
+                              size={24}
+                              weight="duotone"
+                              color="#FFFFFF"
+                            />
+                          </div>
                         </motion.div>
                         <motion.div 
                           className="flex flex-col items-center gap-1"
@@ -177,7 +190,13 @@ const BarCodeReaderModal: FC<Props> = ({
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                           >
-                            <Camera weight="duotone" className="w-8 h-8 text-orange-400 animate-pulse mb-2" />
+                            <div className="animate-pulse mb-2">
+                              <Camera 
+                                size={32}
+                                weight="duotone"
+                                color="#FB923C"
+                              />
+                            </div>
                             <p className="text-sm text-orange-600">カメラを起動しています...</p>
                           </motion.div>
                         )}
@@ -188,7 +207,13 @@ const BarCodeReaderModal: FC<Props> = ({
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                           >
-                            <Warning weight="duotone" className="w-8 h-8 text-red-400 mb-2" />
+                            <div className="mb-2">
+                              <Warning 
+                                size={32}
+                                weight="duotone"
+                                color="#F87171"
+                              />
+                            </div>
                             <p className="text-sm text-red-500">カメラへのアクセスが許可されていません</p>
                           </motion.div>
                         )}
@@ -217,7 +242,13 @@ const BarCodeReaderModal: FC<Props> = ({
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                               >
-                                <Barcode weight="duotone" className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 text-orange-500/30" />
+                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                                  <Barcode 
+                                    size={64}
+                                    weight="duotone"
+                                    color="rgba(249,115,22,0.3)"
+                                  />
+                                </div>
                               </motion.div>
                             </div>
                           </motion.div>

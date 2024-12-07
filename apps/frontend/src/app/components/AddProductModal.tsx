@@ -1,5 +1,4 @@
 import { Listbox, Transition } from '@headlessui/react';
-import { BuildingStorefrontIcon} from '@heroicons/react/20/solid';
 import axios from 'axios';
 import Image from 'next/image';
 import React, { Fragment, useEffect, useState } from 'react';
@@ -51,7 +50,7 @@ type Props = {
   name: string;
   /** バーコード */
   barcode: string;
-  /** 商品情報送信時のコールバック */
+  /** 商品情報��時のコールバック */
   onSubmit: (data: { storeId: number; price: number }) => void;
   /** 商品が登録済みかどうか */
   isRegistered?: boolean;
@@ -156,12 +155,21 @@ const AddProductModal: React.FC<Props> = ({
       isOpen={isOpen}
       onRequestClose={handleClose}
       className={twMerge(
-        "w-full max-w-md mx-auto mt-10 sm:mt-20",
+        "w-full max-w-md mx-auto",
+        "fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2", // 中央配置
+        "max-h-[90vh]", // 画面の90%の高さを最大値に
+        "overflow-y-auto", // スクロール可能に
         "bg-white rounded-2xl shadow-xl",
         "p-4 sm:p-6",
         "sm:max-w-lg md:max-w-xl lg:max-w-2xl"
       )}
-      overlayClassName="fixed inset-0 bg-black/30 backdrop-blur-sm"
+      overlayClassName={twMerge(
+        "fixed inset-0",
+        "bg-black/30 backdrop-blur-sm",
+        "overflow-y-auto", // オーバーレイもスクロール可能に
+        "flex items-center justify-center", // フレックスボックスで中央寄せ
+        "p-4" // パディングを追加してモバイルでの見切れを防ぐ
+      )}
       ariaHideApp={false}
     >
       <motion.div 
@@ -179,7 +187,22 @@ const AddProductModal: React.FC<Props> = ({
             animate={{ scale: 1 }}
             transition={{ type: "spring", stiffness: 200, damping: 15 }}
           >
-            <Storefront weight="duotone" className="h-6 sm:h-7 w-6 sm:w-7 text-white" />
+            <>
+              <div className="hidden sm:block">
+                <Storefront 
+                  size={28}
+                  weight="duotone"
+                  color="#FFFFFF"
+                />
+              </div>
+              <div className="sm:hidden">
+                <Storefront 
+                  size={24} 
+                  weight="duotone"
+                  color="#FFFFFF"
+                />
+              </div>
+            </>
           </motion.div>
           <motion.div 
             className="flex flex-col items-center gap-1"
@@ -218,7 +241,7 @@ const AddProductModal: React.FC<Props> = ({
                   />
                 ) : (
                   <div className="w-full h-full bg-white rounded-lg flex items-center justify-center border border-orange-100">
-                    <ImageSquare weight="duotone" className="w-10 h-10 text-orange-300" />
+                    <ImageSquare weight="duotone" size={40} color="#FDBA74" />
                   </div>
                 )}
               </div>
@@ -239,7 +262,7 @@ const AddProductModal: React.FC<Props> = ({
                 </div>
                 <h3 className="text-base sm:text-lg font-medium text-gray-900 truncate">{name}</h3>
                 <div className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-500">
-                  <Barcode weight="duotone" className="h-4 w-4 text-orange-400" />
+                  <Barcode weight="duotone" size={16} color="#FBBA74" />
                   <span>{barcode}</span>
                 </div>
               </div>
@@ -264,13 +287,25 @@ const AddProductModal: React.FC<Props> = ({
                   "transition-all duration-200",
                   "shadow-sm"
                 )}>
-                  <Storefront weight="duotone" className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-orange-400" />
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2">
+                    <Storefront 
+                      size={20} 
+                      weight="duotone"
+                      color="#FB923C"
+                    />
+                  </div>
                   <span className="block truncate text-base font-medium text-gray-700">
                     {selectedStoreId
                       ? stores.find((store) => store.id === selectedStoreId)?.name
                       : '店舗を選択してください'}
                   </span>
-                  <CaretDown weight="bold" className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-orange-400" />
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                    <CaretDown 
+                      size={20}
+                      weight="bold"
+                      color="#FB923C"
+                    />
+                  </div>
                 </Listbox.Button>
   
                 <Transition
@@ -313,7 +348,7 @@ const AddProductModal: React.FC<Props> = ({
                                 animate={{ scale: 1 }}
                                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
                               >
-                                <Tag weight="duotone" className="h-5 w-5" />
+                                <Tag weight="duotone" size={20} />
                               </motion.span>
                             )}
                           </>
@@ -333,7 +368,7 @@ const AddProductModal: React.FC<Props> = ({
             </label>
             <div className="relative">
               <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                <CurrencyJpy weight="duotone" className="h-5 w-5 text-orange-400" />
+                <CurrencyJpy weight="duotone" size={20} color="#FBBA74" />
               </div>
               <input
                 type="number"
@@ -374,14 +409,14 @@ const AddProductModal: React.FC<Props> = ({
                     <div className="flex items-center gap-1.5">
                       <span className="text-sm text-gray-600">現在の登録価格：</span>
                       <div className="flex items-center">
-                        <CurrencyJpy weight="duotone" className="h-4 w-4 text-orange-500" />
+                        <CurrencyJpy weight="duotone" size={16} color="#F97326" />
                         <span className="text-base font-medium text-gray-900">
                           {productStorePrice ? productStorePrice.price.toLocaleString() : '-'}
                         </span>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      {productStorePrice && <Calendar weight="duotone" className="h-4 w-4 text-orange-400" />}
+                      {productStorePrice && <Calendar weight="duotone" size={16} color="#FBBA74" />}
                       <span className="text-sm text-gray-500">
                         {productStorePrice ? dayjs(productStorePrice.updatedAt).format('YYYY/MM/DD') : ''}
                       </span>
@@ -399,7 +434,7 @@ const AddProductModal: React.FC<Props> = ({
               type="button"
               onClick={() => setIsStoreModalOpen(true)}
               className={twMerge(
-                "inline-flex items-center justify-center",
+                "inline-flex items-center justify-center gap-2",
                 "px-4 py-2.5",
                 "bg-white text-gray-700",
                 "border border-orange-100 rounded-xl",
@@ -413,7 +448,7 @@ const AddProductModal: React.FC<Props> = ({
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              <Storefront weight="duotone" className="h-5 w-5 mr-2 text-orange-400" />
+              <Storefront weight="duotone" size={20} color="#FBBA74" />
               店舗追加
             </motion.button>
   
@@ -445,7 +480,7 @@ const AddProductModal: React.FC<Props> = ({
                 type="submit"
                 className={twMerge(
                   "flex-1 sm:flex-initial",
-                  "inline-flex items-center justify-center",
+                  "inline-flex items-center justify-center gap-1.5",
                   "px-4 py-2.5",
                   "bg-orange-500 text-white",
                   "border border-transparent rounded-xl",
@@ -459,7 +494,7 @@ const AddProductModal: React.FC<Props> = ({
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                <Plus weight="bold" className="h-5 w-5 mr-1.5" />
+                <Plus weight="bold" size={20} />
                 {productStorePrice ? '更新' : '登録'}
               </motion.button>
             </div>

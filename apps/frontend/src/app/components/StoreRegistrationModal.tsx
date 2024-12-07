@@ -81,7 +81,7 @@ const StoreRegistrationModal: FC<Props> = ({ isOpen, onClose }) => {
           whileTap={{ scale: 0.95 }}
           aria-label="閉じる"
         >
-          <X weight="bold" className="h-5 w-5" />
+          <X weight="bold" size={20} />
         </motion.button>
 
         {/* ヘッダー部分 */}
@@ -92,7 +92,20 @@ const StoreRegistrationModal: FC<Props> = ({ isOpen, onClose }) => {
             animate={{ scale: 1 }}
             transition={{ type: "spring", stiffness: 200, damping: 15 }}
           >
-            <Storefront weight="duotone" className="h-6 sm:h-7 w-6 sm:w-7 text-white" />
+            <div className="hidden sm:block">
+              <Storefront 
+                size={28}  // sm:h-7 w-7 (7 * 4 = 28px)
+                weight="duotone"
+                color="#FFFFFF"  // text-white
+              />
+            </div>
+            <div className="sm:hidden">
+              <Storefront 
+                size={24}  // h-6 w-6 (6 * 4 = 24px)
+                weight="duotone"
+                color="#FFFFFF"  // text-white
+              />
+            </div>
           </motion.div>
           <motion.div 
             className="flex flex-col items-center gap-1"
@@ -126,7 +139,11 @@ const StoreRegistrationModal: FC<Props> = ({ isOpen, onClose }) => {
             </label>
             <div className="relative">
               <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                <Storefront weight="duotone" className="h-5 w-5 text-orange-400" />
+                <Storefront 
+                  size={20}  // h-5 w-5 (5 * 4 = 20px)
+                  weight="duotone"
+                  color="#FB923C"  // text-orange-400
+                />
               </div>
               <input
                 type="text"
@@ -182,7 +199,7 @@ const StoreRegistrationModal: FC<Props> = ({ isOpen, onClose }) => {
               type="submit"
               className={twMerge(
                 "flex-1 sm:flex-initial",
-                "inline-flex items-center justify-center",
+                "inline-flex items-center justify-center gap-1.5",
                 "px-4 py-2.5",
                 "bg-orange-500 text-white",
                 "border border-transparent rounded-xl",
@@ -196,7 +213,11 @@ const StoreRegistrationModal: FC<Props> = ({ isOpen, onClose }) => {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              <Plus weight="bold" className="h-5 w-5 mr-1.5" />
+              <Plus 
+                size={20}  // h-5 w-5 (5 * 4 = 20px)
+                weight="bold"
+                color="#FFFFFF"  // ボタン内のアイコンなのでtext-white
+              />
               追加
             </motion.button>
           </div>

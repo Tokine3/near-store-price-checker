@@ -69,7 +69,7 @@ const HomePage: React.FC = () => {
   const [stores, setStores] = useState<Array<{ id: string; name: string }>>([]);
   const [scrollY, setScrollY] = useState(0);  // スクロール位置の状態管理を追加
 
-// スクロール位置の監視
+// スクロール位置
 useEffect(() => {
 
 }, []);
@@ -93,7 +93,7 @@ useEffect(() => {
 const fetchStores = async () => {
   try {
     const response = await axios.get('http://localhost:8000/stores');
-    setStores([{ id: 'all', name: '全ての店舗' }, ...response.data]);
+    setStores([{ id: 'all', name: 'すべての店舗' }, ...response.data]);
   } catch (error) {
     console.error('Error fetching stores:', error);
     toast.error('店舗情報の取得に失敗しました');
@@ -147,7 +147,7 @@ const fetchStores = async () => {
       setScannedProduct(null);
     } catch (error) {
       console.error('Error submitting product:', error);
-      toast.error('商品情報の登録に失敗しました');
+      toast.error('商品情報の登録に敗しました');
     }
   };
 
@@ -230,7 +230,7 @@ const fetchStores = async () => {
       
       return () => {
         window.removeEventListener('scroll', handleScroll);
-        // アンマウント時にすべてのモーダルを確実に閉じる
+        // アンマウント時べてのモーダルを確実に閉じる
         setIsModalOpen(false);
         setIsBarcodeReaderOpen(false);
         setScannedProduct(null);
@@ -285,7 +285,7 @@ const fetchStores = async () => {
             </div>
           </div>
           {/* ボーダーを別要素として配置 */}
-          <div className="absolute bottom-0 left-0 right-0 h-px bg-orange-100" />
+          <div className="absolute bottom-0 left-0 right-0 h-px bg-orange-200" />
         </div>
 
           {/* スクロールインジケーター */}
@@ -294,422 +294,485 @@ const fetchStores = async () => {
             animate={{ y: [0, 5, 0] }}
             transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
           >
-            <CaretDoubleDown size={24} weight="duotone" className="text-orange-400" />
+            <CaretDoubleDown size={24} weight="duotone" color="#FB923C" />
           </motion.div>
         </div>
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* 検索フォーム */}
-        <div className="container mx-auto py-8">
-          <motion.div className="space-y-4 sm:space-y-6">
-            {/* 検索入力フィールド */}
-            <div className="relative flex-1 max-w-lg mx-auto">
-              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                <MagnifyingGlass weight="duotone" className="h-5 w-5 text-orange-400" />
-              </div>
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="商品名を入力"
-                className={twMerge(
-                  "block w-full",
-                  "pl-10 pr-3 py-3",
-                  "text-base font-medium text-gray-700",
-                  "bg-white",
-                  "border border-orange-100 rounded-xl",
-                  "outline-none",
-                  "focus:border-transparent",
-                  "focus:ring-2 focus:ring-orange-500/20",
-                  "placeholder:text-gray-400",
-                  "transition-all duration-200",
-                  "shadow-sm"
-                )}
-              />
-            </div>
-
-            {/* 店舗選択 */}
-            <div className="relative max-w-lg mx-auto">
-              <Listbox value={selectedSearchStoreId} onChange={setSelectedSearchStoreId}>
-                <div className="relative">
-                  <Listbox.Button className={twMerge(
-                    "relative w-full cursor-default",
-                    "rounded-xl bg-white py-3 pl-10 pr-10",
-                    "border border-orange-100",
+        <div className="flex flex-col gap-4">
+          {/* 検索フォーム */}
+          <div className="container mx-auto pt-1 pb-4">
+            <motion.div className="space-y-4">
+              {/* 検索入力フィールド */}
+              <div className="relative flex-1 max-w-lg mx-auto">
+                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                  <MagnifyingGlass weight="duotone" size={20}  color="#FB923C" />
+                </div>
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder="商品名を入力"
+                  className={twMerge(
+                    "block w-full",
+                    "pl-10 pr-3 py-3",
+                    "text-base font-medium text-gray-700",
+                    "bg-white",
+                    "border border-orange-100 rounded-xl",
                     "outline-none",
                     "focus:border-transparent",
                     "focus:ring-2 focus:ring-orange-500/20",
+                    "placeholder:text-gray-400",
                     "transition-all duration-200",
                     "shadow-sm"
-                  )}>
-                    <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                      <Storefront weight="duotone" className="h-5 w-5 text-orange-400" />
-                    </span>
-                    <span className="block truncate text-base font-medium text-gray-700">
-                      {stores.find((store) => store.id === selectedSearchStoreId)?.name || '店舗を選択'}
-                    </span>
-                    <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                      <CaretUpDown weight="bold" className="h-5 w-5 text-orange-400" />
-                    </span>
-                  </Listbox.Button>
+                  )}
+                />
+              </div>
 
-                  <Transition
-                    as={Fragment}
-                    leave="transition ease-in duration-100"
-                    leaveFrom="opacity-100"
-                    leaveTo="opacity-0"
-                  >
-                    <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-xl bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                      {stores.map((store) => (
-                        <Listbox.Option
-                          key={store.id}
-                          value={store.id}
-                          className={({ active }) => twMerge(
-                            "relative cursor-default select-none py-2 pl-10 pr-4",
-                            active ? "bg-orange-50 text-orange-600" : "text-gray-700"
-                          )}
-                        >
-                          {({ selected }) => (
-                            <>
-                              <span className={twMerge(
-                                "block truncate",
-                                selected ? "font-medium" : "font-normal"
-                              )}>
-                                {store.name}
-                              </span>
-                              {selected && (
-                                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-orange-500">
-                                  <Check weight="bold" className="h-5 w-5" />
+              {/* 店舗選択 */}
+              <div className="relative max-w-lg mx-auto">
+                <Listbox value={selectedSearchStoreId} onChange={setSelectedSearchStoreId}>
+                  <div className="relative">
+                    <Listbox.Button className={twMerge(
+                      "relative w-full cursor-default",
+                      "rounded-xl bg-white py-3 pl-10 pr-10",
+                      "border border-orange-100",
+                      "outline-none",
+                      "focus:border-transparent",
+                      "focus:ring-2 focus:ring-orange-500/20",
+                      "transition-all duration-200",
+                      "shadow-sm"
+                    )}>
+                      <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                        <Storefront weight="duotone" size={20} color="#FB923C" />
+                      </span>
+                      <span className="block truncate text-base font-medium text-gray-700">
+                        {stores.find((store) => store.id === selectedSearchStoreId)?.name || '店舗を選択'}
+                      </span>
+                      <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                        <CaretUpDown weight="bold" size={20}  color="#FB923C" />
+                      </span>
+                    </Listbox.Button>
+
+                    <Transition
+                      as={Fragment}
+                      leave="transition ease-in duration-100"
+                      leaveFrom="opacity-100"
+                      leaveTo="opacity-0"
+                    >
+                      <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-xl bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                        {stores.map((store) => (
+                          <Listbox.Option
+                            key={store.id}
+                            value={store.id}
+                            className={({ active }) => twMerge(
+                              "relative cursor-default select-none py-2 pl-10 pr-4",
+                              active ? "bg-orange-50 text-orange-600" : "text-gray-700"
+                            )}
+                          >
+                            {({ selected }) => (
+                              <>
+                                <span className={twMerge(
+                                  "block truncate",
+                                  selected ? "font-medium" : "font-normal"
+                                )}>
+                                  {store.name}
                                 </span>
-                              )}
-                            </>
-                          )}
-                        </Listbox.Option>
-                      ))}
-                    </Listbox.Options>
-                  </Transition>
-                </div>
-              </Listbox>
-            </div>
+                                {selected && (
+                                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-orange-500">
+                                    <Check weight="bold" size={20} />
+                                  </span>
+                                )}
+                              </>
+                            )}
+                          </Listbox.Option>
+                        ))}
+                      </Listbox.Options>
+                    </Transition>
+                  </div>
+                </Listbox>
+              </div>
 
-            {/* ボタングループ */}
-            <motion.div 
-              className="mt-4 sm:mt-6 flex flex-col sm:flex-row gap-3 justify-center"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.4 }}
-            >
-              <motion.button
-                onClick={handleSearch}
-                className={twMerge(
-                  "inline-flex items-center justify-center",
-                  "w-full sm:w-auto",
-                  "px-4 py-2.5",
-                  "bg-gradient-to-r from-orange-500 to-amber-500 text-white",
-                  "border border-transparent rounded-xl",
-                  "outline-none",
-                  "hover:from-orange-600 hover:to-amber-600",
-                  "focus:ring-2 focus:ring-orange-500/20",
-                  "transition-all duration-200"
-                )}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+              {/* ボタングループ */}
+              <motion.div 
+                className="mt-4 sm:mt-6 flex flex-col sm:flex-row gap-3 justify-center"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4 }}
               >
-                <MagnifyingGlass weight="bold" className="h-5 w-5 mr-2" />
-                検索
-              </motion.button>
+                <motion.button
+                  onClick={handleSearch}
+                  className={twMerge(
+                    "inline-flex items-center justify-center gap-2",
+                    "w-full sm:w-auto",
+                    "px-4 py-2.5",
+                    "bg-gradient-to-r from-orange-500 to-amber-500 text-white",
+                    "border border-transparent rounded-xl",
+                    "outline-none",
+                    "hover:from-orange-600 hover:to-amber-600",
+                    "focus:ring-2 focus:ring-orange-500/20",
+                    "transition-all duration-200"
+                  )}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                <MagnifyingGlass 
+                  size={20}
+                  weight="bold" 
+                  color="#FFFFFF" 
+                />
+                  検索
+                </motion.button>
 
-              <motion.button
-                onClick={() => setIsBarcodeReaderOpen(true)}
-                className={twMerge(
-                  "inline-flex items-center justify-center",
-                  "w-full sm:w-auto",
-                  "px-4 py-2.5",
-                  "bg-white text-gray-700",
-                  "border border-orange-100 rounded-xl",
-                  "outline-none",
-                  "hover:bg-orange-50",
-                  "focus:ring-2 focus:ring-orange-500/20",
-                  "transition-all duration-200"
-                )}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <Barcode weight="duotone" className="h-5 w-5 mr-2 text-orange-500" />
-                バーコード読取
-              </motion.button>
+                <motion.button
+                  onClick={() => setIsBarcodeReaderOpen(true)}
+                  className={twMerge(
+                    "inline-flex items-center justify-center gap-2",
+                    "w-full sm:w-auto",
+                    "px-4 py-2.5",
+                    "bg-white text-gray-700",
+                    "border border-orange-100 rounded-xl",
+                    "outline-none",
+                    "hover:bg-orange-50",
+                    "focus:ring-2 focus:ring-orange-500/20",
+                    "transition-all duration-200"
+                  )}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <Barcode weight="duotone" size={20} color="#FB923C" />
+                  バーコード読取
+                </motion.button>
+              </motion.div>
             </motion.div>
-          </motion.div>
-        </div>
+          </div>
 
-        {/* セパレーター */}
-        <div className="space-y-4  space-x-3 mx-auto mb-8"> {}
-          <div className="relative flex justify-center">
+          {/* セパレーター */}
+          <div className="relative">
             <div className="absolute inset-0 flex items-center" aria-hidden="true">
-              <div className="w-full border-b border-orange-100" />
+              <div className="w-full border-t border-orange-200" />
             </div>
           </div>
-        </div>
 
-        {/* 商品一覧*/}
-        <div className="space-y-6">
-          {searchResults.length === 0 ? (
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4 }}
-              className="bg-white rounded-2xl shadow-sm border border-orange-100 overflow-hidden"
-            >
-              <div className="text-center py-12">
-                <motion.div 
-                  className="inline-flex items-center justify-center w-20 h-20 rounded-xl bg-orange-50 mb-4"
-                  initial={{ scale: 0.8 }}
-                  animate={{ scale: 1 }}
-                  transition={{ 
-                    type: "spring",
-                    stiffness: 200,
-                    damping: 15,
-                    delay: 0.2 
-                  }}
-                >
-                  <Storefront weight="duotone" className="h-10 w-10 text-orange-300" />
-                </motion.div>
-                <motion.h3 
-                  className="text-xl font-medium text-gray-900 mb-2"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.3 }}
-                >
-                  最安値の商品がありません
-                </motion.h3>
-                <motion.p 
-                  className="text-sm text-gray-500"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.4 }}
-                >
-                  選択した店舗での商品情報が登録されていません
-                </motion.p>
-              </div>
-            </motion.div>
-          ) : (
-          searchResults.map((product) => (
-            <motion.div
-              key={product.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4 }}
-              className="bg-white rounded-2xl shadow-sm border border-orange-100 overflow-hidden"
-            >
-              <motion.button
-                onClick={() => handleProductClick(product.id)}
-                className="w-full text-left"
-                whileHover={{ backgroundColor: 'rgba(251, 146, 60, 0.05)' }}
-                transition={{ duration: 0.2 }}
+          {/* 商品一覧*/}
+          <div className="flex flex-col gap-6 pb-24">
+            {/* 検索結果件数表示 - 検索結果がある場合のみ表示 */}
+            {searchResults.length > 0 && (
+              <motion.div
+                className="flex items-center gap-2 text-sm text-orange-600/70"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
               >
-                <div className="p-4 sm:p-6">
-                  <div className="flex flex-col sm:flex-row gap-4">
-                    {/* 商品画像 */}
-                    <div className="w-20 h-20 sm:w-32 sm:h-32 mx-auto sm:mx-0 flex-shrink-0 bg-white rounded-xl overflow-hidden">
-                      {product.barcode ? (
-                        <Image
-                          src={`https://image.jancodelookup.com/${product.barcode}`}
-                          alt={product.name}
-                          width={128}
-                          height={128}
-                          className="w-full h-full object-contain"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <ImageSquare weight="duotone" className="w-8 h-8 text-orange-300" />
-                        </div>
-                      )}
-                    </div>
-
-                    {/* 商品情報 */}
-                    <div className="flex-1 min-w-0 text-center sm:text-left">
-                      <div className="flex flex-wrap justify-center sm:justify-start gap-2 mb-2">
-                        {product.makerName && (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
-                            {product.makerName}
-                          </span>
-                        )}
-                        {product.brandName && (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
-                            {product.brandName}
-                          </span>
-                        )}
-                      </div>
-
-                      {/* 商品名部分 */}
-                      <h2 className="text-base sm:text-lg font-semibold text-gray-900 mb-2 flex items-center gap-2 justify-center sm:justify-start">
-                        {product.name}
-                        <CaretDown
-                          weight="bold"
-                          className={`h-5 w-5 text-orange-400 transition-transform duration-200 ${
-                            expandedProductId === product.id ? 'rotate-180' : ''
-                          }`}
-                        />
-                      </h2>
-
-                      {/* 店舗・日付情報 */}
-                      <div className="flex flex-wrap gap-3 justify-center sm:justify-start">
-                        <div className="flex items-center text-gray-600">
-                          <Storefront weight="duotone" className="h-4 w-4 mr-1 text-orange-400" />
-                          <span className="text-sm">{product.prices[0]?.store.name ?? '-'}</span>
-                        </div>
-                        <div className="flex items-center text-gray-600">
-                          <Calendar weight="duotone" className="h-4 w-4 mr-1 text-orange-400" />
-                          <span className="text-sm">
-                            {product.prices[0]?.updatedAt ? dayjs(product.prices[0].updatedAt).format('YYYY/MM/DD') : '-'}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* 価格表示 */}
-                    <div className="w-full sm:w-auto text-center sm:text-right mt-4 sm:mt-0">
-                      <div className="relative pt-8">
-                        {/* 更新バッジ */}
-                        <motion.div 
-                          className={twMerge(
-                            "absolute -top-1 left-1/2 sm:left-auto sm:right-0 transform -translate-x-1/2 sm:translate-x-0",
-                            "flex items-center gap-1.5 px-3 py-1.5 rounded-full",
-                            "border shadow-sm",
-                            product.prices[0]?.updatedAt && isUpdatedWithinDays(product.prices[0].updatedAt, 7)
-                              ? "bg-green-50 text-green-700 border-green-200"
-                              : "bg-gray-50 text-gray-600 border-gray-200"
-                          )}
-                          whileHover={{ scale: 1.05 }}
-                        >
-                          <Timer weight="duotone" className="w-3.5 h-3.5" />
-                          <span className="text-xs font-medium whitespace-nowrap">
-                            {product.prices[0]?.updatedAt && isUpdatedWithinDays(product.prices[0].updatedAt, 7)
-                              ? "7日以内に更新"
-                              : "7日以上更新なし"}
-                          </span>
-                        </motion.div>
-
-                        {/* 価格表示 */}
-                        <div className="text-sm text-gray-500 mb-1.5">最安価格</div>
-                        <div className="flex items-center justify-center sm:justify-end gap-1.5">
-                          <CurrencyJpy weight="duotone" className="h-6 w-6 text-orange-500" />
-                          <span className="text-2xl sm:text-3xl font-bold text-orange-500">
-                            {product.prices[0]?.price.toLocaleString() ?? '-'}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                <div className="flex items-center justify-center w-6 h-6 bg-orange-100 rounded-full">
+                  <List size={14} weight="bold" color="#F97316" />
                 </div>
-              </motion.button>
+                <span>
+                  検索結果: <strong className="font-medium">{searchResults.length}</strong> 件
+                </span>
+              </motion.div>
+            )}
 
-              {/* アコーディオンの内容 */}
-              <AnimatePresence>
-                {expandedProductId === product.id && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.3 }}
+            {searchResults.length === 0 ? (
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+                className="bg-white rounded-2xl shadow-sm border border-orange-100 overflow-hidden"
+              >
+                <div className="text-center py-12">
+                  <motion.div 
+                    className="inline-flex items-center justify-center w-20 h-20 rounded-xl bg-orange-50 mb-4"
+                    initial={{ scale: 0.8 }}
+                    animate={{ scale: 1 }}
+                    transition={{ 
+                      type: "spring",
+                      stiffness: 200,
+                      damping: 15,
+                      delay: 0.2 
+                    }}
                   >
-                    <div className="p-4 sm:p-6 border-t border-orange-100 bg-orange-50/50">
-                      <div className="space-y-4">
-                        {/* セクションタイトル */}
-                        <div className="flex items-center gap-2 text-gray-900">
-                          <Info weight="duotone" className="h-5 w-5 text-orange-500" />
-                          <h3 className="font-medium">他店舗の情報</h3>
+                    <Storefront 
+                      size={40} 
+                      weight="duotone" 
+                      color="#FCD34D"
+                    />
+                  </motion.div>
+                  <motion.h3 
+                    className="text-xl font-medium text-gray-900 mb-2"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.3 }}
+                  >
+                    最安値の商品がありません
+                  </motion.h3>
+                  <motion.p 
+                    className="text-sm text-gray-500"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.4 }}
+                  >
+                    選択した店舗での商品情報が登録されていません
+                  </motion.p>
+                </div>
+              </motion.div>
+            ) : (
+              searchResults.map((product) => (
+                <motion.div
+                  key={product.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4 }}
+                  className="bg-white rounded-2xl shadow-sm border border-orange-100 overflow-hidden"
+                >
+                  <motion.button
+                    onClick={() => handleProductClick(product.id)}
+                    className="w-full text-left"
+                    whileHover={{ backgroundColor: 'rgba(251, 146, 60, 0.05)' }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <div className="p-4 sm:p-6">
+                      <div className="flex flex-col sm:flex-row gap-4">
+                        {/* 商品画像 */}
+                        <div className="w-20 h-20 sm:w-32 sm:h-32 mx-auto sm:mx-0 flex-shrink-0 bg-white rounded-xl overflow-hidden">
+                          {product.barcode ? (
+                            <Image
+                              src={`https://image.jancodelookup.com/${product.barcode}`}
+                              alt={product.name}
+                              width={128}
+                              height={128}
+                              className="w-full h-full object-contain"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <ImageSquare weight="duotone" size={32} color="#FCD34D" />
+                            </div>
+                          )}
                         </div>
-                        {/* 店舗ごとの価格一覧 */}
-                        {product.prices.map((price) => {
-                          // 最安値との価格差を計算
-                          const lowestPrice = product.prices[0]?.price;
-                          const lowestPriceStoreId = product.prices[0]?.store.id;
-                          const priceDiff = lowestPrice ? price.price - lowestPrice : 0;
-                          
-                          if (price.store.id === lowestPriceStoreId) return;
-                          return (
-                            <motion.div
-                              key={price.id}
-                              initial={{ opacity: 0, y: 10 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-white rounded-xl border border-orange-100/50 gap-3 sm:gap-4"
-                            >
-                              {/* 店舗情報 */}
-                              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
-                                <div className="flex items-center gap-1.5 text-gray-700">
-                                  <Storefront weight="duotone" className="h-5 w-5 text-orange-400" />
-                                  <span className="font-medium">{price.store.name}</span>
-                                </div>
-                                <div className="flex items-center gap-1.5 text-gray-500 text-sm">
-                                  <Calendar weight="duotone" className="h-4 w-4 text-orange-400" />
-                                  <span>{dayjs(price.updatedAt).format('YYYY/MM/DD')}</span>
-                                </div>
-                              </div>
 
-                              {/* 価格情報 */}
-                              <div className="flex items-center gap-3 justify-end sm:justify-start ml-auto">
-                                {/* 価格差バッジ */}
-                                {priceDiff > 0 && (
-                                  <div className={twMerge(
-                                    "flex items-center gap-1",
-                                    "px-2 py-1 rounded-full",
-                                    "text-xs font-medium whitespace-nowrap",
-                                    "bg-red-50 text-red-700 border border-red-200"
-                                  )}>
-                                    <ArrowTrendingUpIcon className="h-3 w-3" />
-                                    <span>+¥{priceDiff.toLocaleString()}</span>
-                                  </div>
-                                )}
-                                {/* 価格表示 */}
-                                <div className="flex items-center gap-1">
-                                  <CurrencyJpy weight="duotone" className="h-5 w-5 text-orange-500" />
-                                  <span className="text-lg sm:text-xl font-bold text-orange-500 whitespace-nowrap">
-                                    {price.price.toLocaleString()}
-                                  </span>
-                                </div>
-                              </div>
-                            </motion.div>
-                          );
-                        })}
-
-                        {/* 商品情報の詳細 */}
-                        <div className="mt-4 pt-4 border-t border-orange-100">
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                        {/* 商品情報 */}
+                        <div className="flex-1 min-w-0 text-center sm:text-left">
+                          <div className="flex flex-wrap justify-center sm:justify-start gap-2 mb-2">
                             {product.makerName && (
-                              <div className="flex items-center gap-2 text-gray-600 text-sm sm:text-base">
-                                <BuildingStorefrontIcon className="h-5 w-5 text-orange-400 flex-shrink-0" />
-                                <span className="truncate">メーカー: {product.makerName}</span>
-                              </div>
+                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                                {product.makerName}
+                              </span>
                             )}
                             {product.brandName && (
-                              <div className="flex items-center gap-2 text-gray-600 text-sm sm:text-base">
-                                <TagIcon className="h-5 w-5 text-orange-400 flex-shrink-0" />
-                                <span className="truncate">ブランド: {product.brandName}</span>
-                              </div>
+                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                                {product.brandName}
+                              </span>
                             )}
-                            {product.barcode && (
-                              <div className="flex items-center gap-2 text-gray-600 text-sm sm:text-base">
-                                <Barcode weight="duotone" className="h-5 w-5 text-orange-400 flex-shrink-0" />
-                                <span className="truncate">バーコード: {product.barcode}</span>
-                              </div>
-                            )}
+                          </div>
+
+                          {/* 商品名部分 */}
+                          <h2 className="text-base sm:text-lg font-semibold text-gray-900 mb-2 flex items-center gap-2 justify-center sm:justify-start">
+                            {product.name}
+                            <div
+                              className={`transition-transform duration-200 ${
+                                expandedProductId === product.id ? 'rotate-180' : ''
+                              }`}
+                            >
+                              <CaretDown
+                                size={20}
+                                weight="bold"
+                                color="#FB923C"  
+                              />
+                            </div>
+                          </h2>
+
+                          {/* 店舗・日付情報 */}
+                          <div className="flex flex-wrap gap-3 justify-center sm:justify-start">
+                            <div className="flex items-center text-gray-600 gap-1">
+                              <Storefront weight="duotone" size={18} color="#FB923C" />
+                              <span className="text-sm">{product.prices[0]?.store.name ?? '-'}</span>
+                            </div>
+                            <div className="flex items-center text-gray-600 gap-1">
+                              <Calendar weight="duotone" size={18} color="#FB923C" />
+                              <span className="text-sm">
+                                {product.prices[0]?.updatedAt ? dayjs(product.prices[0].updatedAt).format('YYYY/MM/DD') : '-'}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* 価格表示 */}
+                        <div className="w-full sm:w-auto text-center sm:text-right mt-4 sm:mt-0">
+                          <div className="relative pt-8">
+                            {/* 更新バッジ */}
+                            <motion.div 
+                              className={twMerge(
+                                "absolute -top-1 left-1/2 sm:left-auto sm:right-0 transform -translate-x-1/2 sm:translate-x-0",
+                                "flex items-center gap-1.5 px-3 py-1.5 rounded-full",
+                                "border shadow-sm",
+                                product.prices[0]?.updatedAt && isUpdatedWithinDays(product.prices[0].updatedAt, 7)
+                                  ? "bg-green-50 text-green-700 border-green-200"
+                                  : "bg-gray-50 text-gray-600 border-gray-200"
+                              )}
+                              whileHover={{ scale: 1.05 }}
+                            >
+                              <Timer weight="duotone" size={14} />
+                              <span className="text-xs font-medium whitespace-nowrap">
+                                {product.prices[0]?.updatedAt && isUpdatedWithinDays(product.prices[0].updatedAt, 7)
+                                  ? "7日以内に更新"
+                                  : "7日以上更新なし"}
+                              </span>
+                            </motion.div>
+
+                            {/* 価格表示 */}
+                            <div className="text-sm text-gray-500 mb-1.5">最安価格</div>
+                            <div className="flex items-center justify-center sm:justify-end gap-1.5">
+                              <CurrencyJpy weight="duotone" size={24} color="#F97316" />
+                              <span className="text-2xl sm:text-3xl font-bold text-orange-500">
+                                {product.prices[0]?.price.toLocaleString() ?? '-'}
+                              </span>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
-          ))
-        )}
+                  </motion.button>
+
+                  {/* アコーディオンの内容 */}
+                  <AnimatePresence>
+                    {expandedProductId === product.id && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        <div className="p-4 sm:p-6 border-t border-orange-100 bg-orange-50/50">
+                          <div className="space-y-4">
+                            {/* セクションタイトル */}
+                            <div className="flex items-center gap-2 text-gray-900">
+                              <Info weight="duotone" size={20} color="F97316" />
+                              <h3 className="font-medium">他店舗の情報</h3>
+                            </div>
+
+                            {/* 他店舗の価格情報 */}
+                            {product.prices.length <= 1 ? (
+                              <motion.div
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="flex flex-col items-center justify-center p-8 bg-white rounded-xl border border-orange-100/50"
+                              >
+                                <motion.div 
+                                  className="flex items-center justify-center w-12 h-12 bg-orange-50 rounded-xl mb-3"
+                                  initial={{ scale: 0.8 }}
+                                  animate={{ scale: 1 }}
+                                  transition={{ 
+                                    type: "spring",
+                                    stiffness: 200,
+                                    damping: 15,
+                                    delay: 0.1 
+                                  }}
+                                >
+                                  <Storefront weight="duotone" size={24} color="#FDBA74" />
+                                </motion.div>
+                                <motion.p 
+                                  className="text-sm font-medium text-gray-600 mb-1"
+                                  initial={{ opacity: 0 }}
+                                  animate={{ opacity: 1 }}
+                                  transition={{ delay: 0.2 }}
+                                >
+                                  他店舗の価格情報が登録されていません
+                                </motion.p>
+                              </motion.div>
+                            ) : (
+                              // 既存の店舗価格マッピング
+                              product.prices.map((price) => {
+                                // 最安価格との価格差を計算
+                                const lowestPrice = product.prices[0]?.price;
+                                const lowestPriceStoreId = product.prices[0]?.store.id;
+                                const priceDiff = lowestPrice ? price.price - lowestPrice : 0;
+                                
+                                if (price.store.id === lowestPriceStoreId) return;
+                                return (
+                                  <motion.div
+                                    key={price.id}
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-white rounded-xl border border-orange-100/50 gap-3 sm:gap-4"
+                                  >
+                                    {/* 店舗情報 */}
+                                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
+                                      <div className="flex items-center gap-1.5 text-gray-700">
+                                        <Storefront weight="duotone" size={20} color="#FB923C" />
+                                        <span className="font-medium">{price.store.name}</span>
+                                      </div>
+                                      <div className="flex items-center gap-1.5 text-gray-500 text-sm">
+                                        <Calendar weight="duotone" size={20} color="#FB923C" />
+                                        <span>{dayjs(price.updatedAt).format('YYYY/MM/DD')}</span>
+                                      </div>
+                                    </div>
+
+                                    {/* 価格情報 */}
+                                    <div className="flex items-center gap-3 justify-end sm:justify-start ml-auto">
+                                      {/* 価格差バッジ */}
+                                      {priceDiff > 0 && (
+                                        <div className={twMerge(
+                                          "flex items-center gap-1",
+                                          "px-2 py-1 rounded-full",
+                                          "text-xs font-medium whitespace-nowrap",
+                                          "bg-red-50 text-red-700 border border-red-200"
+                                        )}>
+                                          <ArrowTrendingUpIcon className="h-3 w-3" />
+                                          <span>最安値+¥{priceDiff.toLocaleString()}</span>
+                                        </div>
+                                      )}
+                                      {/* 価格表示 */}
+                                      <div className="flex items-center gap-1">
+                                        <CurrencyJpy weight="duotone" size={20} color="#F97316" />
+                                        <span className="text-lg sm:text-xl font-bold text-orange-500 whitespace-nowrap">
+                                          {price.price.toLocaleString()}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  </motion.div>
+                                );
+                              })
+                            )}
+
+                            {/* 商品情報の詳細 */}
+                            <div className="mt-4 pt-4 border-t border-orange-100">
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                                {product.makerName && (
+                                  <div className="flex items-center gap-2 text-gray-600 text-sm sm:text-base">
+                                    <BuildingStorefrontIcon className="h-5 w-5 text-orange-400 flex-shrink-0" />
+                                    <span className="truncate">メーカー: {product.makerName}</span>
+                                  </div>
+                                )}
+                                {product.brandName && (
+                                  <div className="flex items-center gap-2 text-gray-600 text-sm sm:text-base">
+                                    <TagIcon className="h-5 w-5 text-orange-400 flex-shrink-0" />
+                                    <span className="truncate">ブランド: {product.brandName}</span>
+                                  </div>
+                                )}
+                                {product.barcode && (
+                                  <div className="flex items-center gap-2 text-gray-600 text-sm sm:text-base flex-shrink-0">
+                                    <Barcode weight="duotone" size={20} color="#FB923C" />
+                                    <span className="truncate">バーコード: {product.barcode}</span>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
+              ))
+            )}
+          </div>
+        </div>
       </div>
 
         <>
-        {/* メニューボタン - 常に左下に固定 */}
+        {/* メニューボタン - に左下に固定 */}
         <motion.div 
           className="fixed bottom-6 left-6"
           initial={{ opacity: 0, y: 20 }}
@@ -719,7 +782,7 @@ const fetchStores = async () => {
           <Menu as="div" className="relative">
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Menu.Button className="p-4 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-xl shadow-lg hover:from-orange-600 hover:to-amber-600 focus:outline-none focus:ring-2 focus:ring-orange-500/20 transition-all duration-200">
-                <List weight="bold" className="h-6 w-6" />
+                <List weight="bold" size={24} />
               </Menu.Button>
             </motion.div>
 
@@ -737,11 +800,11 @@ const fetchStores = async () => {
                   {({ active }) => (
                     <Link
                       href="/"
-                      className={`flex items-center px-4 py-3 text-sm ${
+                      className={`flex items-center px-4 py-3 text-sm gap-3 ${
                         active ? 'bg-orange-50 text-orange-600' : 'text-gray-700'
                       }`}
                     >
-                      <House weight="duotone" className="h-5 w-5 mr-3" />
+                      <House weight="duotone" size={20} />
                       一覧
                     </Link>
                   )}
@@ -750,11 +813,11 @@ const fetchStores = async () => {
                   {({ active }) => (
                     <button
                       onClick={() => setIsStoreModalOpen(true)}
-                      className={`flex items-center w-full px-4 py-3 text-sm ${
+                      className={`flex items-center w-full px-4 py-3 text-sm gap-3 ${
                         active ? 'bg-orange-50 text-orange-600' : 'text-gray-700'
                       }`}
                     >
-                      <Storefront weight="duotone" className="h-5 w-5 mr-3" />
+                      <Storefront weight="duotone" size={20} />
                       店舗追加
                     </button>
                   )}
@@ -784,7 +847,7 @@ const fetchStores = async () => {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
-          <CaretUp weight="bold" className="h-6 w-6" />
+          <CaretUp weight="bold" size={24} />
         </motion.button>
       </>
 
@@ -830,10 +893,8 @@ const fetchStores = async () => {
         pauseOnHover
         theme="light"
       />
-      </div>
     </div>
   );
 };
-
 
 export default HomePage;
