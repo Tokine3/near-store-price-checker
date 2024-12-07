@@ -19,7 +19,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { CurrencyJpy, ShoppingCart, Tag, CaretDoubleDown, MagnifyingGlass, Storefront, CaretUpDown, Check, Barcode, List, House, CaretDown, Calendar, Timer, ImageSquare, CaretUp, Info } from '@phosphor-icons/react';
 
 type BarcodeResult = {
-  text: string;
+  barcodeNo: string;
 }
 
 export type ProductPrice = {
@@ -178,19 +178,19 @@ const fetchStores = async () => {
   };
 
   const handleBarcodeDetected = async (error: unknown, result?: BarcodeResult | null) => {
-    if (!result?.text) return;
+    if (!result?.barcodeNo) return;
     
     setIsBarcodeReaderOpen(false);
 
     try {
-      const response = await axios.get(`http://localhost:8000/products/barcode/${result.text}`);
+      const response = await axios.get(`http://localhost:8000/products/barcode/${result.barcodeNo}`);
       const productData = response.data;
 
       console.log('productData:', productData);
 
       const newScannedProduct = {
         name: productData.name,
-        barcode: result.text,
+        barcode: productData.barcode,
         brandName: productData.brandName,
         makerName: productData.makerName,
         prices: productData.prices,

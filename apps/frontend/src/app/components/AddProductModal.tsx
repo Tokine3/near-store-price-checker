@@ -50,7 +50,7 @@ type Props = {
   name: string;
   /** バーコード */
   barcode: string;
-  /** 商品情報��時のコールバック */
+  /** 商品情報信時のコールバック */
   onSubmit: (data: { storeId: number; price: number }) => void;
   /** 商品が登録済みかどうか */
   isRegistered?: boolean;
