@@ -44,22 +44,11 @@ const StoreRegistrationModal: FC<Props> = ({ isOpen, onClose }) => {
     <Modal
       isOpen={isOpen}
       onRequestClose={resetAndClose}
-      className={twMerge(
-        "w-full max-w-md mx-auto mt-10 sm:mt-20",
-        "bg-white rounded-2xl shadow-xl",
-        "p-4 sm:p-6",
-        "sm:max-w-lg"
-      )}
-      overlayClassName="fixed inset-0 bg-black/30 backdrop-blur-sm"
+      className="fixed inset-0 flex items-center justify-center p-4 bg-black bg-opacity-50"
+      overlayClassName="fixed inset-0 bg-black bg-opacity-50"
       ariaHideApp={false}
     >
-      <motion.div 
-        className="flex flex-col gap-4 sm:gap-6"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 20 }}
-        transition={{ duration: 0.3 }}
-      >
+      <div className="relative w-full max-w-md bg-white rounded-2xl shadow-xl p-4 sm:p-6">
         {/* 閉じるボタン */}
         <motion.button
           type="button"
@@ -92,20 +81,7 @@ const StoreRegistrationModal: FC<Props> = ({ isOpen, onClose }) => {
             animate={{ scale: 1 }}
             transition={{ type: "spring", stiffness: 200, damping: 15 }}
           >
-            <div className="hidden sm:block">
-              <Storefront 
-                size={28}  // sm:h-7 w-7 (7 * 4 = 28px)
-                weight="duotone"
-                color="#FFFFFF"  // text-white
-              />
-            </div>
-            <div className="sm:hidden">
-              <Storefront 
-                size={24}  // h-6 w-6 (6 * 4 = 24px)
-                weight="duotone"
-                color="#FFFFFF"  // text-white
-              />
-            </div>
+            <Storefront size={28} weight="duotone" color="#FFFFFF" />
           </motion.div>
           <motion.div 
             className="flex flex-col items-center gap-1"
@@ -130,7 +106,7 @@ const StoreRegistrationModal: FC<Props> = ({ isOpen, onClose }) => {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
         >
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 mt-4">
             <label 
               htmlFor="storeName" 
               className="text-sm font-medium text-gray-700"
@@ -222,7 +198,7 @@ const StoreRegistrationModal: FC<Props> = ({ isOpen, onClose }) => {
             </motion.button>
           </div>
         </motion.form>
-      </motion.div>
+      </div>
     </Modal>
   );
 };

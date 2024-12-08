@@ -3,10 +3,10 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import axios from 'axios';
 import AddProductModal from '../components/AddProductModal';
+import ProductSearchModal from '../components/ProductSearchModal';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { Listbox, Menu, Transition } from '@headlessui/react';
-import Link from 'next/link';
+import { Listbox, Transition } from '@headlessui/react';
 import Modal from 'react-modal';
 import StoreRegistrationModal from '../components/StoreRegistrationModal';
 import BarcodeReaderModal from '../components/BarCodeReaderModal';
@@ -16,7 +16,7 @@ import { twMerge } from 'tailwind-merge';
 import dayjs from 'dayjs';
 import { ArrowTrendingUpIcon, TagIcon } from '@heroicons/react/20/solid';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CurrencyJpy, ShoppingCart, Tag, CaretDoubleDown, MagnifyingGlass, Storefront, CaretUpDown, Check, Barcode, List, House, CaretDown, Calendar, Timer, ImageSquare, CaretUp, Info } from '@phosphor-icons/react';
+import { CurrencyJpy, ShoppingCart, Tag, CaretDoubleDown, MagnifyingGlass, Storefront, CaretUpDown, Check, Barcode, List, CaretDown, Calendar, Timer, ImageSquare, CaretUp, Info } from '@phosphor-icons/react';
 
 type BarcodeResult = {
   barcodeNo: string;
@@ -68,6 +68,7 @@ const HomePage: React.FC = () => {
   const [selectedSearchStoreId, setSelectedSearchStoreId] = useState<string>('all');
   const [stores, setStores] = useState<Array<{ id: string; name: string }>>([]);
   const [scrollY, setScrollY] = useState(0);  // スクロール位置の状態管理を追加
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
 
 // スクロール位置
 useEffect(() => {
@@ -239,6 +240,33 @@ const fetchStores = async () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-amber-50">
+      {/* 固定ナビゲーションバー */}
+      <nav className="fixed bottom-0 left-0 right-0 bg-white shadow-md border-t border-orange-100 z-50">
+        <div className="flex justify-around py-2">
+          <button
+            onClick={() => setIsSearchModalOpen(true)}
+            className="flex flex-col items-center text-orange-500"
+          >
+            <MagnifyingGlass size={24} weight="duotone" />
+            <span className="text-xs">検索</span>
+          </button>
+          <button
+            onClick={() => setIsBarcodeReaderOpen(true)}
+            className="flex flex-col items-center text-orange-500"
+          >
+            <Barcode size={24} weight="duotone" />
+            <span className="text-xs">バーコード</span>
+          </button>
+          <button
+            onClick={() => setIsStoreModalOpen(true)}
+            className="flex flex-col items-center text-orange-500"
+          >
+            <Storefront size={24} weight="duotone" />
+            <span className="text-xs">店舗追加</span>
+          </button>
+        </div>
+      </nav>
+
       <div className="container mx-auto px-4 pt-4 pb-8">
         {/* ヘッダー部分のコンテナ */}
         <div className="relative pb-6">
@@ -583,7 +611,7 @@ const fetchStores = async () => {
                             </div>
                           </h2>
 
-                          {/* 店舗・日付情報 */}
+                          {/* 店舗・日付情報報 */}
                           <div className="flex flex-wrap gap-3 justify-center sm:justify-start">
                             <div className="flex items-center text-gray-600 gap-1">
                               <Storefront weight="duotone" size={18} color="#FB923C" />
@@ -623,14 +651,14 @@ const fetchStores = async () => {
 
                             {/* 価格表示 */}
                             <div className="text-sm text-gray-500 mb-1.5">最安価格</div>
-                            <div className="flex items-center justify-center sm:justify-end gap-1.5">
-                              <CurrencyJpy weight="duotone" size={24} color="#F97316" />
-                              <span className="text-2xl sm:text-3xl font-bold text-orange-500">
-                                {product.prices[0]?.price.toLocaleString() ?? '-'}
-                              </span>
+                              <div className="flex items-center justify-center sm:justify-end gap-1.5">
+                                <CurrencyJpy weight="duotone" size={24} color="#F97316" />
+                                <span className="text-2xl sm:text-3xl font-bold text-orange-500">
+                                  {product.prices[0]?.price.toLocaleString() ?? '-'}
+                                </span>
+                              </div>
                             </div>
                           </div>
-                        </div>
                       </div>
                     </div>
                   </motion.button>
@@ -771,67 +799,12 @@ const fetchStores = async () => {
         </div>
       </div>
 
-        <>
-        {/* メニューボタン - に左下に固定 */}
-        <motion.div 
-          className="fixed bottom-6 left-6"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-        >
-          <Menu as="div" className="relative">
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Menu.Button className="p-4 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-xl shadow-lg hover:from-orange-600 hover:to-amber-600 focus:outline-none focus:ring-2 focus:ring-orange-500/20 transition-all duration-200">
-                <List weight="bold" size={24} />
-              </Menu.Button>
-            </motion.div>
-
-            <Transition
-              as={Fragment}
-              enter="transition ease-out duration-200"
-              enterFrom="opacity-0 translate-y-1"
-              enterTo="opacity-100 translate-y-0"
-              leave="transition ease-in duration-150"
-              leaveFrom="opacity-100 translate-y-0"
-              leaveTo="opacity-0 translate-y-1"
-            >
-              <Menu.Items className="absolute left-0 bottom-16 w-48 bg-white rounded-xl shadow-xl divide-y divide-orange-100 overflow-hidden focus:outline-none border border-orange-100">
-                <Menu.Item>
-                  {({ active }) => (
-                    <Link
-                      href="/"
-                      className={`flex items-center px-4 py-3 text-sm gap-3 ${
-                        active ? 'bg-orange-50 text-orange-600' : 'text-gray-700'
-                      }`}
-                    >
-                      <House weight="duotone" size={20} />
-                      一覧
-                    </Link>
-                  )}
-                </Menu.Item>
-                <Menu.Item>
-                  {({ active }) => (
-                    <button
-                      onClick={() => setIsStoreModalOpen(true)}
-                      className={`flex items-center w-full px-4 py-3 text-sm gap-3 ${
-                        active ? 'bg-orange-50 text-orange-600' : 'text-gray-700'
-                      }`}
-                    >
-                      <Storefront weight="duotone" size={20} />
-                      店舗追加
-                    </button>
-                  )}
-                </Menu.Item>
-              </Menu.Items>
-            </Transition>
-          </Menu>
-        </motion.div>
-
+      <>
         {/* トップへ戻るボタン - 右下に固定 */}
         <motion.button
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           className={twMerge(
-            "fixed bottom-6 right-6",
+            "fixed bottom-16 right-6", // bottomを6から16に変更
             "p-4 bg-white text-orange-500",
             "rounded-xl shadow-lg",
             "border border-orange-100",
@@ -853,6 +826,20 @@ const fetchStores = async () => {
 
 
       {/* Modals */}
+      {/* 商品検索モーダル */}
+      <ProductSearchModal
+        isOpen={isSearchModalOpen}
+        onClose={() => setIsSearchModalOpen(false)}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        handleKeyDown={handleKeyDown}
+        handleSearch={handleSearch}
+        selectedSearchStoreId={selectedSearchStoreId}
+        setSelectedSearchStoreId={setSelectedSearchStoreId}
+        stores={stores}
+      />
+
+      { /* 商品追加モーダル */}
       <AddProductModal
         isOpen={isModalOpen && scannedProduct !== null}
         onClose={handleCancel}
@@ -863,12 +850,9 @@ const fetchStores = async () => {
         onSubmit={handleSubmitProduct}
         isRegistered={scannedProduct?.isRegistered}
         scannedProduct={scannedProduct}
-        // selectedStorePrice={scannedProduct?.prices}
-        // selectedStorePrice={scannedProduct?.prices?.find(
-        //   price => price.store.id === parseInt(selectedStoreId)
-        // )}
       />
 
+      {/* バーコード読み取りモーダル */}
       <BarcodeReaderModal
         key={isBarcodeReaderOpen ? 'open' : 'closed'}
         isOpen={isBarcodeReaderOpen}
@@ -876,11 +860,13 @@ const fetchStores = async () => {
         onDetected={handleBarcodeDetected}
       />
 
+      {/* 店舗追加モーダル */}
       <StoreRegistrationModal
         isOpen={isStoreModalOpen}
         onClose={() => setIsStoreModalOpen(false)}
       />
 
+      {/* Toast Container */}
       <ToastContainer
         position="top-center"
         autoClose={3000}

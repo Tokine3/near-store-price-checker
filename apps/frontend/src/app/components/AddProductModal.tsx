@@ -111,6 +111,7 @@ const AddProductModal: React.FC<Props> = ({
     onStoreSelect(storeId);
 
     console.log('scannedProduct at handleStoreSelect', scannedProduct);
+    console.log('storeId at handleStoreSelect', storeId);
 
     const existingPrice = scannedProduct?.prices?.find(
       (productStore) => productStore.store.id === Number(storeId)

@@ -119,73 +119,73 @@ const BarCodeReaderModal: FC<Props> = ({
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 20 }}
                     >
-                      {/* 閉じるボタン */}
-                      <motion.button
+                    {/* 閉じるボタン */}
+                    <motion.button
                         type="button"
                         onClick={handleClose}
                         className={twMerge(
-                          "absolute -top-2 -right-2 z-10",
-                          "p-2 rounded-full",
-                          "bg-white text-gray-500",
-                          "border border-orange-100",
-                          "outline-none",
-                          "hover:bg-orange-50",
-                          "focus:border-transparent",
-                          "focus:ring-2 focus:ring-orange-500/20",
-                          "focus:shadow-[0_0_0_4px_rgba(249,115,22,0.1)]",
-                          "transition-all duration-200",
-                          "shadow-md"
+                        "absolute -top-2 -right-2 z-10",
+                        "p-2 rounded-full",
+                        "bg-white text-gray-500",
+                        "border border-orange-100",
+                        "outline-none",
+                        "hover:bg-orange-50",
+                        "focus:border-transparent",
+                        "focus:ring-2 focus:ring-orange-500/20",
+                        "focus:shadow-[0_0_0_4px_rgba(249,115,22,0.1)]",
+                        "transition-all duration-200",
+                        "shadow-md"
                         )}
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         aria-label="閉じる"
-                      >
+                    >
                         <X weight="bold" size={20} />
-                      </motion.button>
+                    </motion.button>
     
-                      {/* ヘッダー部分 */}
-                      <div className="flex flex-col items-center gap-3 sm:gap-4 pb-4 sm:pb-6 border-b border-orange-100">
+                    {/* ヘッダー部分 */}
+                    <div className="flex flex-col items-center gap-3 sm:gap-4 pb-4 sm:pb-6 border-b border-orange-100">
                         <motion.div 
-                          className="flex items-center justify-center w-12 sm:w-14 h-12 sm:h-14 bg-gradient-to-br from-orange-400 to-amber-500 rounded-xl shadow-lg"
-                          initial={{ scale: 0.8 }}
-                          animate={{ scale: 1 }}
-                          transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                        className="flex items-center justify-center w-12 sm:w-14 h-12 sm:h-14 bg-gradient-to-br from-orange-400 to-amber-500 rounded-xl shadow-lg"
+                        initial={{ scale: 0.8 }}
+                        animate={{ scale: 1 }}
+                        transition={{ type: "spring", stiffness: 200, damping: 15 }}
                         >
-                          <div className="hidden sm:block">
+                        <div className="hidden sm:block">
                             <Camera 
-                              size={28}
-                              weight="duotone"
-                              color="#FFFFFF"
+                            size={28}
+                            weight="duotone"
+                            color="#FFFFFF"
                             />
-                          </div>
-                          <div className="sm:hidden">
+                        </div>
+                        <div className="sm:hidden">
                             <Camera 
-                              size={24}
-                              weight="duotone"
-                              color="#FFFFFF"
+                            size={24}
+                            weight="duotone"
+                            color="#FFFFFF"
                             />
-                          </div>
+                        </div>
                         </motion.div>
                         <motion.div 
-                          className="flex flex-col items-center gap-1"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          transition={{ delay: 0.2 }}
+                        className="flex flex-col items-center gap-1"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.2 }}
                         >
-                          <Dialog.Title className="text-xl sm:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-orange-500 to-amber-600">
+                        <Dialog.Title className="text-xl sm:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-orange-500 to-amber-600">
                             バーコードをスキャン
-                          </Dialog.Title>
-                          <p className="text-xs sm:text-sm text-orange-600/70">
+                        </Dialog.Title>
+                        <p className="text-xs sm:text-sm text-orange-600/70">
                             商品のバーコードをカメラにかざしてください
-                          </p>
+                        </p>
                         </motion.div>
-                      </div>
+                    </div>
     
-                      {/* モード切替ボタン */}
-                      <div className="flex justify-center mt-4 mb-4">
+                    {/* モード切替ボタン */}
+                    <div className="flex justify-center mt-4 mb-4">
                         <motion.button
-                          onClick={() => setIsManualMode(!isManualMode)}
-                          className={twMerge(
+                        onClick={() => setIsManualMode(!isManualMode)}
+                        className={twMerge(
                             "inline-flex items-center gap-2",
                             "px-4 py-2",
                             "bg-white",
@@ -195,56 +195,56 @@ const BarCodeReaderModal: FC<Props> = ({
                             "text-gray-700",
                             "hover:bg-orange-50",
                             "transition-colors"
-                          )}
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
+                        )}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
                         >
-                          {isManualMode ? (
-                            <>
-                              <Camera size={20} className="text-orange-400" />
-                              カメラに切り替え
-                            </>
-                          ) : (
-                            <>
-                              <Keyboard size={20} className="text-orange-400" />
-                              手動入力に切り替え
-                            </>
-                          )}
-                        </motion.button>
-                      </div>
-    
-                      {/* カメラビュー / マニュアル入力フォーム */}
-                      <AnimatePresence mode="wait">
                         {isManualMode ? (
-                          <motion.form
+                            <>
+                            <Camera size={20} color="#FB923C"  />
+                            カメラに切り替え
+                            </>
+                        ) : (
+                            <>
+                            <Keyboard size={20} color="#FB923C"  />
+                            手動入力に切り替え
+                            </>
+                        )}
+                        </motion.button>
+                    </div>
+    
+                    {/* カメラビュー / マニュアル入力フォーム */}
+                    <AnimatePresence mode="wait">
+                        {isManualMode ? (
+                        <motion.form
                             key="manual"
                             onSubmit={handleManualSubmit}
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -20 }}
                             className="space-y-4"
-                          >
+                        >
                             <div className="space-y-2">
-                              <label 
+                            <label 
                                 htmlFor="barcode" 
                                 className="block text-sm font-medium text-gray-700"
-                              >
+                            >
                                 バーコード番号を入力
-                              </label>
-                              <div className="relative">
+                            </label>
+                            <div className="relative">
                                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                                  <Barcode 
+                                <Barcode 
                                     size={20}
                                     weight="duotone"
-                                    className="text-orange-400"
-                                  />
+                                    color="#FB923C" 
+                                />
                                 </div>
                                 <input
-                                  id="barcode"
-                                  type="text"
-                                  value={manualBarcode}
-                                  onChange={(e) => setManualBarcode(e.target.value)}
-                                  className={twMerge(
+                                id="barcode"
+                                type="text"
+                                value={manualBarcode}
+                                onChange={(e) => setManualBarcode(e.target.value)}
+                                className={twMerge(
                                     "block w-full",
                                     "pl-10 pr-3 py-2.5",
                                     "bg-white",
@@ -256,14 +256,14 @@ const BarCodeReaderModal: FC<Props> = ({
                                     "focus:ring-2",
                                     "focus:ring-orange-500/20",
                                     "transition-colors"
-                                  )}
-                                  placeholder="バーコード番号を入力してください"
+                                )}
+                                placeholder="バーコード番号を入力してください"
                                 />
-                              </div>
+                            </div>
                             </div>
                             <motion.button
-                              type="submit"
-                              className={twMerge(
+                            type="submit"
+                            className={twMerge(
                                 "w-full",
                                 "px-4 py-2.5",
                                 "bg-orange-500",
@@ -271,101 +271,101 @@ const BarCodeReaderModal: FC<Props> = ({
                                 "rounded-xl",
                                 "hover:bg-orange-600",
                                 "transition-colors"
-                              )}
-                              whileHover={{ scale: 1.02 }}
-                              whileTap={{ scale: 0.98 }}
+                            )}
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
                             >
-                              確定
+                            確定
                             </motion.button>
-                          </motion.form>
+                        </motion.form>
                         ) : (
-                          <motion.div 
+                        <motion.div 
                             key="camera"
                             className="relative w-full h-64 sm:h-80"
                             initial={{ opacity: 0, y: -20 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: 20 }}
-                          >
+                        >
                             {isLoading && (
-                              <motion.div 
+                            <motion.div 
                                 className="absolute inset-0 flex flex-col items-center justify-center bg-orange-50/50 z-10"
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
-                              >
+                            >
                                 <div className="animate-pulse mb-2">
-                                  <Camera 
+                                <Camera 
                                     size={32}
                                     weight="duotone"
                                     color="#FB923C"
-                                  />
+                                />
                                 </div>
                                 <p className="text-sm text-orange-600">カメラを起動しています...</p>
-                              </motion.div>
+                            </motion.div>
                             )}
         
                             {!isLoading && !hasPermission && (
-                              <motion.div 
+                            <motion.div 
                                 className="absolute inset-0 flex flex-col items-center justify-center bg-orange-50/50"
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
-                              >
+                            >
                                 <div className="mb-2">
-                                  <Warning 
+                                <Warning 
                                     size={32}
                                     weight="duotone"
                                     color="#F87171"
-                                  />
+                                />
                                 </div>
                                 <p className="text-sm text-red-500">カメラへのアクセスが許可されていません</p>
-                              </motion.div>
+                            </motion.div>
                             )}
         
                             {shouldShowScanner && hasPermission && !isManualMode && (
-                              <motion.div 
+                            <motion.div 
                                 className="absolute inset-0"
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
-                              >
+                            >
                                 <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
-                                  <BarcodeScannerComponent
+                                <BarcodeScannerComponent
                                     width="100%"
                                     height="100%"
                                     onUpdate={(error: unknown, result?: Result) => {
-                                      if (result) {
+                                    if (result) {
                                         onDetected(error, { barcodeNo: result.getText() });
-                                      } else {
+                                    } else {
                                         onDetected(error, null);
-                                      }
+                                    }
                                     }}
                                     facingMode="environment"
-                                  />
-                                  <motion.div
+                                />
+                                <motion.div
                                     className="absolute inset-0 pointer-events-none"
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
-                                  >
+                                >
                                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                                      <Barcode 
+                                    <Barcode 
                                         size={64}
                                         weight="duotone"
                                         color="rgba(249,115,22,0.3)"
-                                      />
+                                    />
                                     </div>
-                                  </motion.div>
+                                </motion.div>
                                 </div>
-                              </motion.div>
+                            </motion.div>
                             )}
-                          </motion.div>
+                        </motion.div>
                         )}
-                      </AnimatePresence>
+                    </AnimatePresence>
                     </motion.div>
-                  </Dialog.Panel>
+                </Dialog.Panel>
                 </div>
-              </div>
+            </div>
             </Dialog>
-          )}
+        )}
         </AnimatePresence>
-      );
+    );
     };
 
 export default BarCodeReaderModal;
