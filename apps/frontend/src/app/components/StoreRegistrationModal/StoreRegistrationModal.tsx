@@ -1,13 +1,13 @@
 import { FC } from 'react';
-import Modal from 'react-modal';
 import { motion } from 'framer-motion';
 import { ModalProps } from './_types';
 import { useStoreRegistration } from './_hooks';
-import { modalAnimations, modalStyles } from './_styles';
+import { modalAnimations } from './_styles';
 import { CloseButton } from './_components/CloseButton';
 import { ModalHeader } from './_components/ModalHeader';
 import { StoreNameInput } from './_components/StoreNameInput';
 import { FormActions } from './_components/FormActions';
+import { DialogContainer } from '../BarCodeReaderModal/_components';
 
 export const StoreRegistrationModal: FC<ModalProps> = ({
   isOpen,
@@ -21,20 +21,7 @@ export const StoreRegistrationModal: FC<ModalProps> = ({
   } = useStoreRegistration({ onClose });
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onRequestClose={resetAndClose}
-      className={modalStyles.overlay}
-      overlayClassName={modalStyles.overlay}
-      ariaHideApp={false}
-    >
-      <motion.div 
-        className={modalStyles.container}
-        variants={modalAnimations.content}
-        initial="initial"
-        animate="animate"
-        exit="exit"
-      >
+    <DialogContainer isOpen={isOpen} onClose={resetAndClose}>
         <CloseButton onClose={resetAndClose} />
         <ModalHeader />
         <motion.form 
@@ -50,7 +37,6 @@ export const StoreRegistrationModal: FC<ModalProps> = ({
           />
           <FormActions onCancel={resetAndClose} />
         </motion.form>
-      </motion.div>
-    </Modal>
+    </DialogContainer>
   );
 };

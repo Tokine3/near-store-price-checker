@@ -13,5 +13,19 @@ export const modalStyles = {
     panel: twMerge(
         "w-full max-w-lg mx-auto",
         "mt-10 sm:mt-20 p-4"
-    )
+    ),
+    input: twMerge(
+        "w-full rounded-xl",
+        "pl-10 py-2.5",
+        "text-base font-medium text-gray-700",
+        "bg-white",
+        "border border-orange-100",
+        "outline-none",
+        "focus:border-transparent",
+        "focus:ring-2 focus:ring-orange-500/20",
+        "focus:shadow-[0_0_0_4px_rgba(249,115,22,0.1)]",
+        "placeholder:text-gray-400",
+        "transition-shadow duration-200",
+        "shadow-sm"
+    ),
 };

@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Barcode } from '@phosphor-icons/react';
 import { twMerge } from 'tailwind-merge';
 import { ManualInputFormProps } from '../../_types/types';
+import { modalStyles } from '../../_styles';
 
 export const ManualInputForm: FC<ManualInputFormProps> = ({
     manualBarcode,
@@ -37,19 +38,7 @@ export const ManualInputForm: FC<ManualInputFormProps> = ({
                 type="text"
                 value={manualBarcode}
                 onChange={(e) => onBarcodeChange(e.target.value)}
-                className={twMerge(
-                "block w-full",
-                "pl-10 pr-3 py-2.5",
-                "bg-white",
-                "border border-gray-200",
-                "rounded-xl",
-                "text-gray-900",
-                "placeholder:text-gray-400",
-                "focus:border-orange-500",
-                "focus:ring-2",
-                "focus:ring-orange-500/20",
-                "transition-colors"
-                )}
+                className={modalStyles.input}
                 placeholder="バーコード番号を入力してください"
             />
             </div>

@@ -4,6 +4,7 @@ import { ModalContent } from './_components/ModalContent';
 import { useCamera } from './_hooks/useCamera';
 import { useManualInput } from './_hooks/useManualInput';
 import { ModalProps } from './_types';
+import { CancelButton } from '../common/CancelButton';
 
 export const BarCodeReaderModal: FC<ModalProps> = ({
   isOpen,
@@ -42,6 +43,9 @@ export const BarCodeReaderModal: FC<ModalProps> = ({
         onManualSubmit={handleSubmit}
         cameraProps={cameraProps}
       />
+      <div className="flex flex-co sm:flex-row sm:justify-center sm:items-center gap-3 pt-2">
+        <CancelButton onClick={handleClose} />
+      </div>
     </DialogContainer>
   );
 };

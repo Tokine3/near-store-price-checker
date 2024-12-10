@@ -1,9 +1,9 @@
 import { FC } from 'react';
-import Modal from 'react-modal';
-import { modalStyles, modalAnimations } from './_styles';
 import { ProductSearchModalProps } from './_types';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence,  } from 'framer-motion';
 import { CloseButton, ModalHeader, SearchButton, SearchInput, StoreSelect } from './_components';
+import { DialogContainer } from '../BarCodeReaderModal/_components';
+import { CancelButton } from '../common/CancelButton';
 
 export const ProductSearchModal: FC<ProductSearchModalProps> = ({
     isOpen,
@@ -20,24 +20,10 @@ export const ProductSearchModal: FC<ProductSearchModalProps> = ({
         handleSearch();
         onClose();
     };
-    
     return (
     <AnimatePresence>
         {isOpen && (
-        <Modal
-            isOpen={isOpen}
-            onRequestClose={onClose}
-            className={modalStyles.container}
-            overlayClassName={modalStyles.overlay}
-            ariaHideApp={false}
-        >
-            <motion.div
-            className="relative"
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            variants={modalAnimations.content}
-            >
+        <DialogContainer isOpen={isOpen} onClose={onClose}>
             <CloseButton onClose={onClose} />
             <ModalHeader />
             <SearchInput
@@ -50,9 +36,11 @@ export const ProductSearchModal: FC<ProductSearchModalProps> = ({
                 setSelectedSearchStoreId={setSelectedSearchStoreId}
                 stores={stores}
             />
-            <SearchButton onClick={handleSearchAndClose} />
-            </motion.div>
-        </Modal>
+            <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-2">
+                <CancelButton onClick={onClose} />
+                <SearchButton onClick={handleSearchAndClose} />
+            </div>
+            </DialogContainer>
         )}
     </AnimatePresence>
     );

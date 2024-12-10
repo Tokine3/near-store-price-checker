@@ -1,11 +1,10 @@
 import { FC, useEffect, useState, useCallback } from 'react';
-import Modal from 'react-modal';
 import { ModalHeader } from './_components/ModalHeader';
 import { ModalContent } from './_components/ModalContent';
 import { useStores, useProductPrice, useFormSubmit } from './_hooks';
 import { AddProductModalProps } from './_types';
-import { modalClassNames } from './_components/_styles';
 import { StoreRegistrationModal } from '../StoreRegistrationModal';
+import { DialogContainer } from '../BarCodeReaderModal/_components';
 
 export const AddProductModal: FC<AddProductModalProps> = ({
   isOpen,
@@ -67,13 +66,7 @@ export const AddProductModal: FC<AddProductModalProps> = ({
   ]);  // 必要な関数のみを依存配列に追加
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onRequestClose={formSubmit.handleClose}
-      className={modalClassNames.container}
-      overlayClassName={modalClassNames.overlay}
-      ariaHideApp={false}
-    >
+    <DialogContainer isOpen={isOpen} onClose={formSubmit.handleClose}>
       <ModalHeader isRegistered={isRegistered} />
       <ModalContent
         barcode={barcode}
@@ -98,6 +91,6 @@ export const AddProductModal: FC<AddProductModalProps> = ({
           fetchStores();
         }}
       />
-    </Modal>
+    </DialogContainer>
   );
 };

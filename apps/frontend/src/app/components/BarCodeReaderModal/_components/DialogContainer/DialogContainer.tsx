@@ -28,16 +28,16 @@ export const DialogContainer: FC<DialogContainerProps> = ({
                 aria-hidden="true" 
             />
             
-            <div className="fixed inset-0 flex items-start justify-center overflow-y-auto">
-                <div className={modalStyles.panel}>
-                <Dialog.Panel>
-                    <motion.div
-                    className={modalStyles.container}
-                    {...modalAnimations.content}
-                    >
-                    {children}
-                    </motion.div>
-                </Dialog.Panel>
+            <div className="fixed inset-0 flex items-center justify-center p-4">
+                <div className="w-full max-w-md">
+                    <Dialog.Panel>
+                        <motion.div
+                        className={modalStyles.container}
+                        {...modalAnimations.content}
+                        >
+                        {children}
+                        </motion.div>
+                    </Dialog.Panel>
                 </div>
             </div>
             </Dialog>
