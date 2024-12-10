@@ -1,0 +1,1 @@
+export { BarCodeReaderModal } from './BarCodeReaderModal';

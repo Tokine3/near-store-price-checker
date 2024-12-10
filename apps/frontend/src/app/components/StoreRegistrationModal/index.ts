@@ -1,0 +1,1 @@
+export { StoreRegistrationModal } from './StoreRegistrationModal';

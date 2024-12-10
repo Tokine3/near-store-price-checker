@@ -1,0 +1,1 @@
+export { useStoreRegistration } from './useStoreRegistration';

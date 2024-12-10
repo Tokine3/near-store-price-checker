@@ -2,14 +2,10 @@
 
 import React, { Fragment, useEffect, useState } from 'react';
 import axios from 'axios';
-import AddProductModal from '../components/AddProductModal';
-import ProductSearchModal from '../components/ProductSearchModal';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Listbox, Transition } from '@headlessui/react';
 import Modal from 'react-modal';
-import StoreRegistrationModal from '../components/StoreRegistrationModal';
-import BarcodeReaderModal from '../components/BarCodeReaderModal';
 import { BuildingStorefrontIcon} from '@heroicons/react/24/outline';
 import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
@@ -17,6 +13,10 @@ import dayjs from 'dayjs';
 import { ArrowTrendingUpIcon, TagIcon } from '@heroicons/react/20/solid';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CurrencyJpy, ShoppingCart, Tag, CaretDoubleDown, MagnifyingGlass, Storefront, CaretUpDown, Check, Barcode, List, CaretDown, Calendar, Timer, ImageSquare, CaretUp, Info } from '@phosphor-icons/react';
+import { AddProductModal } from '../components/AddProductModal';
+import { BarCodeReaderModal } from '../components/BarCodeReaderModal';
+import { ProductSearchModal } from '../components/ProductSearchModal';
+import { StoreRegistrationModal } from '../components/StoreRegistrationModal';
 
 type BarcodeResult = {
   barcodeNo: string;
@@ -39,7 +39,7 @@ type Product = {
   brandName?: string;
   barcode: string;
   prices: ProductPrice[];
-  isRegistered?: boolean;
+  isRegistered: boolean;
 }
 
 export type ScannedProduct = {
@@ -48,7 +48,7 @@ export type ScannedProduct = {
   brandName?: string;
   barcode: string;
   prices?: ProductPrice[];
-  isRegistered?: boolean;
+  isRegistered: boolean;
 }
 
 const HomePage: React.FC = () => {
@@ -189,7 +189,7 @@ const fetchStores = async () => {
 
       console.log('productData:', productData);
 
-      const newScannedProduct = {
+      const newScannedProduct: ScannedProduct = {
         name: productData.name,
         barcode: productData.barcode,
         brandName: productData.brandName,
@@ -312,6 +312,7 @@ const fetchStores = async () => {
               </motion.p>
             </div>
           </div>
+
           {/* ボーダーを別要素として配置 */}
           <div className="absolute bottom-0 left-0 right-0 h-px bg-orange-200" />
         </div>
@@ -848,12 +849,12 @@ const fetchStores = async () => {
         name={scannedProduct?.name || ''}
         barcode={scannedProduct?.barcode || ''}
         onSubmit={handleSubmitProduct}
-        isRegistered={scannedProduct?.isRegistered}
+        isRegistered={scannedProduct?.isRegistered ?? false}
         scannedProduct={scannedProduct}
       />
 
       {/* バーコード読み取りモーダル */}
-      <BarcodeReaderModal
+      <BarCodeReaderModal
         key={isBarcodeReaderOpen ? 'open' : 'closed'}
         isOpen={isBarcodeReaderOpen}
         onClose={() => setIsBarcodeReaderOpen(false)}

@@ -214,9 +214,6 @@ export class ProductsService {
       };
     }
 
-    // const response = await axios.get(
-    //   `https://shopping.yahooapis.jp/ShoppingWebService/V3/itemSearch?appid=${process.env.YAHOO_CLIENT_ID}&jan_code=${barcode}`,
-    // );
     const response = await axios.get(
       `https://api.jancodelookup.com/?appId=${process.env.JANCODELOOKUP_APP_KEY}&query=${barcode}`,
     );

@@ -1,0 +1,1 @@
+export { PermissionDeniedView } from './PermissionDeniedView';
