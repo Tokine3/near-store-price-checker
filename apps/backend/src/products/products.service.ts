@@ -214,17 +214,31 @@ export class ProductsService {
       };
     }
 
-    // const response = await axios.get(
-    //   `https://shopping.yahooapis.jp/ShoppingWebService/V3/itemSearch?appid=${process.env.YAHOO_CLIENT_ID}&jan_code=${barcode}`,
-    // );
     const response = await axios.get(
       `https://api.jancodelookup.com/?appId=${process.env.JANCODELOOKUP_APP_KEY}&query=${barcode}`,
     );
+
     console.log(response.data);
     console.log(response.data.product[0].itemImageUrl);
     if (!response.data.product) {
       throw new NotFoundException('商品が見つかりませんでした');
     }
+
+    // JANコードの最後の一桁があっても無くても同じ商品であることがあるため
+    // JANCODELOOKUPの情報を優先する
+    const sameProduct = await this.prisma.product.findUnique({
+      where: { barcode: response.data.product[0].codeNumber },
+      include: {
+        prices: {
+          include: {
+            store: true,
+          },
+          orderBy: {
+            price: 'asc',
+          },
+        },
+      },
+    });
 
     // 商品情報を返すだけで、DBには保存しない
     return {
@@ -244,8 +258,8 @@ export class ProductsService {
         response.data.product[0].itemImageUrl === ''
           ? '不明'
           : response.data.product[0].itemImageUrl,
-      barcode,
-      isRegistered: false, // DBには無いProps True,Falseで登録処理の分岐を行う
+      barcode: response.data.product[0].codeNumber,
+      isRegistered: sameProduct ? true : false, // DBには無いProps True,Falseで登録処理の分岐を行う
     };
   }
 }
