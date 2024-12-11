@@ -18,6 +18,7 @@ import { BarCodeReaderModal } from '../components/BarCodeReaderModal';
 import { ProductSearchModal } from '../components/ProductSearchModal';
 import { StoreRegistrationModal } from '../components/StoreRegistrationModal';
 import { api } from '@/lib/axios';
+import { LoadingOverlay } from '../components/common/LoadingOverlay/LoadingOverlay';
 
 type BarcodeResult = {
   barcodeNo: string;
@@ -96,8 +97,9 @@ const HomePage: React.FC = () => {
   const [expandedProductId, setExpandedProductId] = useState<string | null>(null);
   const [selectedSearchStoreId, setSelectedSearchStoreId] = useState<string>('all');
   const [stores, setStores] = useState<Array<{ id: string; name: string }>>([]);
-  const [scrollY, setScrollY] = useState(0);  // スクロール位置の状態管理を追加
+  const [scrollY, setScrollY] = useState(0);  // スクロール位置の状態管理
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);  // バーコードから商品を検索中の状態管理
 
   // エンターキーイベントをキャンセルする関数
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -203,7 +205,8 @@ const fetchStores = async () => {
     if (!result?.barcodeNo) return;
     
     setIsBarcodeReaderOpen(false);
-
+    setIsSearching(true); // ローディング開始
+  
     try {
       if(result.barcodeNo.length < 6) {
         toast.error('バーコード番号が正しくありません');
@@ -212,9 +215,7 @@ const fetchStores = async () => {
       }
       const response = await api.get(`/products/barcode/${result.barcodeNo}`);
       const productData = response.data;
-
-      console.log('productData' ,productData);
-
+  
       const newScannedProduct: ScannedProduct = {
         name: productData.name,
         barcode: productData.barcode,
@@ -234,6 +235,8 @@ const fetchStores = async () => {
       } else {
         toast.error('エラーが発生しました');
       }
+    } finally {
+      setIsSearching(false); // ローディング終了
     }
   };
 
@@ -891,6 +894,11 @@ const fetchStores = async () => {
         isOpen={isStoreModalOpen}
         onClose={() => setIsStoreModalOpen(false)}
       />
+
+      {/* Loading Overlay */}
+      <AnimatePresence>
+        {isSearching && <LoadingOverlay />}
+      </AnimatePresence>
 
       {/* Toast Container */}
       <ToastContainer
