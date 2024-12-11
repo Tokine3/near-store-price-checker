@@ -5,7 +5,7 @@
         "dependsOn": ["^build"],
         "outputs": [
             "dist/**",
-            ".next/**",
+            ".next/**"
         ]
     },
     "dev": {

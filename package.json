@@ -7,7 +7,7 @@
 		"build": "turbo run build",
 		"dev": "turbo run dev",
 		"lint": "turbo run lint"
-	  },
+	},
 	"dependencies": {
 		"@nestjs/cli": "^10.4.8",
 		"@nestjs/common": "^10.4.13",
