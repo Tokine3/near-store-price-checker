@@ -1,12 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
-import axios from 'axios';
 import { CreateProductDto } from './dto/create-product.dto';
 import { AddPriceDto } from './dto/add-price-dto';
 import cloudinary, {
   CLOUDINARY_BASE_URL,
   CLOUDINARY_PRODUCT_FOLDER,
 } from 'src/config/cloudinary.config';
+import axios from 'axios';
 
 const convertKatakanaToHiragana = (str: string) => {
   return str.replace(/[\u30a1-\u30f6]/g, function (match) {
