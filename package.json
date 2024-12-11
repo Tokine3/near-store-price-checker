@@ -4,9 +4,9 @@
 	"private": true,
 	"packageManager": "pnpm@9.5.0",
 	"scripts": {
-		"build": "turbo run build",
-		"dev": "turbo run dev",
-		"lint": "turbo run lint"
+		"dev": "pnpm --filter frontend dev & pnpm --filter backend dev",
+		"build": "pnpm --filter frontend build & pnpm --filter backend build",
+		"lint": "pnpm --filter frontend lint & pnpm --filter backend lint"
 	},
 	"dependencies": {
 		"@nestjs/cli": "^10.4.8",

@@ -13,18 +13,18 @@ export const modalAnimations = {
     },
     icon: {
         initial: { scale: 0.8 },
-        animate: { scale: 1 },
-        transition: { type: "spring", stiffness: 200, damping: 15 }
+        animate: { 
+            scale: 1,
+            transition: { type: "spring", stiffness: 100, damping: 10 }
+        },
     },
     text: {
         initial: { opacity: 0 },
-        animate: { opacity: 1 },
-        transition: { delay: 0.2 }
+        animate: { opacity: 1, transition: { delay: 0.2 } },
     },
     form: {
         initial: { opacity: 0 },
-        animate: { opacity: 1 },
-        transition: { delay: 0.3 }
+        animate: { opacity: 1, transition: { delay: 0.3 } },
     },
     button: {
         hover: { scale: 1.02 },
