@@ -7,7 +7,7 @@ const getCookie = (name: string): string | undefined => {
 };
 
 export const api = axios.create({
-    baseURL: 'http://localhost:8000',
+    baseURL: process.env.BACKEND_URL,
     headers: {
         'Content-Type': 'application/json'
     }

@@ -151,20 +151,19 @@ const fetchStores = async () => {
   
     try {
       if (!scannedProduct.isRegistered) {
-        await axios.post('http://localhost:8000/products', {
+        await api.post('/products', {
           name: scannedProduct.name,
           makerName: scannedProduct.makerName,
           brandName: scannedProduct.brandName,
           barcode: scannedProduct.barcode,
           price: data.price,
           storeId: data.storeId,
-        });
+        })
       } else {
-        await axios.post(`http://localhost:8000/products/new-prices/${scannedProduct.barcode}`, {
+        await api.post(`/products/new-prices/${scannedProduct.barcode}`, {
           storeId: data.storeId,
           price: data.price,
-        });
-        await handleSearch();
+        })
       }
   
       toast.success('商品情報を登録しました');
@@ -185,19 +184,14 @@ const fetchStores = async () => {
   const handleSearch = async () => {
     try {
       const storeQuery = selectedSearchStoreId !== '&storeId=all' ? `&storeId=${selectedSearchStoreId}` : '';
-      const response = await axios.get<Product[]>(
-        `http://localhost:8000/products/search?term=${encodeURIComponent(searchTerm.trim())}${storeQuery}`
-      );
-
-      console.log('response.data', response.data);
+      const response = await api.get<Product[]>(`/products/search?term=${encodeURIComponent(searchTerm.trim())}${storeQuery}`);
 
       if (response.data.length === 0) {
         setSearchResults([]);
       }
       
       setSearchResults(response.data);
-    } catch (error) {
-      console.error('Error searching products:', error);
+    } catch {
       toast.error('商品の検索に失敗しました');
     }
   };
@@ -208,7 +202,7 @@ const fetchStores = async () => {
     setIsBarcodeReaderOpen(false);
 
     try {
-      const response = await axios.get(`http://localhost:8000/products/barcode/${result.barcodeNo}`);
+      const response = await api.get(`/products/barcode/${result.barcodeNo}`);
       const productData = response.data;
 
       console.log('productData' ,productData);

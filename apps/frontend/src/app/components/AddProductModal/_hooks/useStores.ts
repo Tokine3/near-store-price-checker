@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
-import axios from 'axios';
 import { toast } from 'react-toastify';
 import { Store } from '../_types';
+import { api } from '@/lib/axios';
 
 export const useStores = () => {
     const [stores, setStores] = useState<Store[]>([]);
@@ -13,14 +13,14 @@ export const useStores = () => {
         setError(null);
         
         try {
-        const response = await axios.get('http://localhost:8000/stores');
-        setStores(response.data);
+            const response = await api.get('/stores');
+            setStores(response.data);
         } catch (error) {
-        console.error('Error fetching stores:', error);
-        toast.error('店舗情報の取得に失敗しました');
-        setError(error as Error);
+            console.error('Error fetching stores:', error);
+            toast.error('店舗情報の取得に失敗しました');
+            setError(error as Error);
         } finally {
-        setIsLoading(false);
+            setIsLoading(false);
         }
     }, []);
 
