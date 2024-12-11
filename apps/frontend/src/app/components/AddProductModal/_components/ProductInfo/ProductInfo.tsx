@@ -7,6 +7,7 @@ type ProductInfoProps = {
     name: string;
     makerName?: string;
     brandName?: string;
+    imageUrl: string;
 }
 
 export const ProductInfo: React.FC<ProductInfoProps> = ({
@@ -14,6 +15,7 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
     name,
     makerName,
     brandName,
+    imageUrl,
 }) => {
     return (
         <motion.div 
@@ -26,12 +28,16 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
             <div className="relative w-24 h-24 flex-shrink-0">
             {barcode ? (
                 <Image
-                src={`https://image.jancodelookup.com/${barcode}`}
+                src={imageUrl}
                 alt={name}
                 fill
                 sizes="(max-width: 96px) 100vw, 96px"
                 style={{ objectFit: 'contain' }}
                 className="rounded-lg shadow-sm bg-white"
+                onError={(e) => {
+                    console.error('画像読み込みエラー:', imageUrl);
+                    e.currentTarget.src = ''; // エラー時に空の画像を表示
+                }}
                 />
             ) : (
                 <div className="w-full h-full bg-white rounded-lg flex items-center justify-center border border-orange-100">

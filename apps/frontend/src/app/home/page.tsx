@@ -39,6 +39,7 @@ type Product = {
   makerName?: string;
   brandName?: string;
   barcode: string;
+  imageUrl: string;
   prices: ProductPrice[];
   isRegistered: boolean;
 }
@@ -48,6 +49,7 @@ export type ScannedProduct = {
   makerName?: string;
   brandName?: string;
   barcode: string;
+  imageUrl: string;
   prices?: ProductPrice[];
   isRegistered: boolean;
 }
@@ -187,7 +189,7 @@ const fetchStores = async () => {
         `http://localhost:8000/products/search?term=${encodeURIComponent(searchTerm.trim())}${storeQuery}`
       );
 
-      console.log(response.data);
+      console.log('response.data', response.data);
 
       if (response.data.length === 0) {
         setSearchResults([]);
@@ -209,7 +211,7 @@ const fetchStores = async () => {
       const response = await axios.get(`http://localhost:8000/products/barcode/${result.barcodeNo}`);
       const productData = response.data;
 
-      console.log('productData:', productData);
+      console.log('productData' ,productData);
 
       const newScannedProduct: ScannedProduct = {
         name: productData.name,
@@ -217,8 +219,11 @@ const fetchStores = async () => {
         brandName: productData.brandName,
         makerName: productData.makerName,
         prices: productData.prices,
+        imageUrl: productData.imageUrl,
         isRegistered: productData.isRegistered
       };
+
+      console.log('newScannedProduct', newScannedProduct);
   
       setScannedProduct(newScannedProduct);
 
@@ -590,7 +595,7 @@ const fetchStores = async () => {
                         <div className="w-20 h-20 sm:w-32 sm:h-32 mx-auto sm:mx-0 flex-shrink-0 bg-white rounded-xl overflow-hidden">
                           {product.barcode ? (
                             <Image
-                              src={`https://image.jancodelookup.com/${product.barcode}`}
+                              src={product.imageUrl}
                               alt={product.name}
                               width={128}
                               height={128}
@@ -870,6 +875,7 @@ const fetchStores = async () => {
         brandName={scannedProduct?.brandName || ''}
         name={scannedProduct?.name || ''}
         barcode={scannedProduct?.barcode || ''}
+        imageUrl={scannedProduct?.imageUrl || ''}
         onSubmit={handleSubmitProduct}
         isRegistered={scannedProduct?.isRegistered ?? false}
         scannedProduct={scannedProduct}

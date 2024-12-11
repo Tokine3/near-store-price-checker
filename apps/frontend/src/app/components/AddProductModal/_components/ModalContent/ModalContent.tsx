@@ -12,6 +12,7 @@ type ModalContentProps = {
     name: string;
     makerName?: string;
     brandName?: string;
+    imageUrl: string;
     selectedStoreId: string;
     stores: Store[];
     onStoreSelect: (storeId: string) => void;
@@ -30,6 +31,7 @@ export const ModalContent: FC<ModalContentProps> = ({
     brandName,
     selectedStoreId,
     stores,
+    imageUrl,
     onStoreSelect,
     price,
     onPriceChange,
@@ -49,6 +51,7 @@ export const ModalContent: FC<ModalContentProps> = ({
             name={name}
             makerName={makerName}
             brandName={brandName}
+            imageUrl={imageUrl}
             />
 
             <StoreSelect

@@ -13,6 +13,7 @@ export const AddProductModal: FC<AddProductModalProps> = ({
   brandName,
   name,
   barcode,
+  imageUrl,
   onSubmit,
   isRegistered,
   scannedProduct,
@@ -73,6 +74,7 @@ export const AddProductModal: FC<AddProductModalProps> = ({
         name={name}
         makerName={makerName}
         brandName={brandName}
+        imageUrl={imageUrl}
         selectedStoreId={selectedStoreId}
         stores={stores}
         onStoreSelect={handleStoreSelect}

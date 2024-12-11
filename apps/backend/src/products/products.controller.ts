@@ -17,7 +17,7 @@ export class ProductsController {
     return this.productService.addPrice(barcode, body);
   }
 
-  @Get('')
+  @Get()
   async findAll() {
     return this.productService.findAll();
   }

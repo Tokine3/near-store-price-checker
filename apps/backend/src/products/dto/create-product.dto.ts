@@ -5,4 +5,5 @@ export class CreateProductDto {
   barcode: string;
   price: number;
   storeId: number;
+  imageUrl?: string;
 }

@@ -3,6 +3,10 @@ import { PrismaService } from '../prisma.service';
 import axios from 'axios';
 import { CreateProductDto } from './dto/create-product.dto';
 import { AddPriceDto } from './dto/add-price-dto';
+import cloudinary, {
+  CLOUDINARY_BASE_URL,
+  CLOUDINARY_PRODUCT_FOLDER,
+} from 'src/config/cloudinary.config';
 
 const convertKatakanaToHiragana = (str: string) => {
   return str.replace(/[\u30a1-\u30f6]/g, function (match) {
@@ -21,6 +25,33 @@ const convertHiraganaToKatakana = (str: string) => {
 @Injectable()
 export class ProductsService {
   constructor(private prisma: PrismaService) {}
+
+  private async cacheProductImage(
+    barcode: string,
+    imageUrl: string,
+  ): Promise<string> {
+    try {
+      // 既存の画像を確認
+      try {
+        await cloudinary.api.resource(
+          `${CLOUDINARY_PRODUCT_FOLDER}/${barcode}.jpg`,
+        );
+        return `${CLOUDINARY_BASE_URL}/${CLOUDINARY_PRODUCT_FOLDER}/${barcode}.jpg`;
+      } catch {
+        // 画像が存在しない場合、アップロード
+        await cloudinary.uploader.upload(imageUrl, {
+          public_id: barcode,
+          folder: CLOUDINARY_PRODUCT_FOLDER,
+          format: 'jpg',
+          overwrite: true,
+        });
+        return `${CLOUDINARY_BASE_URL}/${CLOUDINARY_PRODUCT_FOLDER}/${barcode}.jpg`;
+      }
+    } catch (error) {
+      console.error('画像のキャッシュに失敗:', error);
+      return imageUrl; // エラー時は元のURLを返す
+    }
+  }
 
   async registerProduct(body: CreateProductDto) {
     const { name, brandName, makerName, barcode, price, storeId } = body;
@@ -103,7 +134,13 @@ export class ProductsService {
       },
     });
 
-    return products;
+    // 画像URLを追加してフロントに返す
+    return products.map((product) => {
+      return {
+        ...product,
+        imageUrl: `${CLOUDINARY_BASE_URL}/${CLOUDINARY_PRODUCT_FOLDER}/${product.barcode}.jpg`,
+      };
+    });
   }
 
   async searchByName(term: string, storeId: string) {
@@ -175,6 +212,7 @@ export class ProductsService {
         prices: product.prices ?? [],
         storeName: product.prices[0]?.store.name,
         updatedAt: product.prices[0]?.updatedAt,
+        imageUrl: `${CLOUDINARY_BASE_URL}/${CLOUDINARY_PRODUCT_FOLDER}/${product.barcode}.jpg`,
       };
     });
 
@@ -201,7 +239,9 @@ export class ProductsService {
     console.log(product);
 
     if (product) {
-      console.log('product is true');
+      // 既存の画像URLを取得
+      const imageUrl = `https://image.jancodelookup.com/${barcode}`;
+      const cachedImageUrl = await this.cacheProductImage(barcode, imageUrl);
       return {
         id: product.id,
         name: product.name,
@@ -210,6 +250,7 @@ export class ProductsService {
         barcode: product.barcode,
         prices: product.prices ?? [],
         store: product.prices[0]?.storeId,
+        imageUrl: cachedImageUrl,
         isRegistered: true, // DBには無いProps True,Falseで登録処理の分岐を行う
       };
     }
@@ -223,6 +264,10 @@ export class ProductsService {
     if (!response.data.product) {
       throw new NotFoundException('商品が見つかりませんでした');
     }
+
+    // 画像のキャッシュ
+    const imageUrl = response.data.product[0].itemImageUrl;
+    const cachedImageUrl = await this.cacheProductImage(barcode, imageUrl);
 
     // JANコードの最後の一桁があっても無くても同じ商品であることがあるため
     // JANCODELOOKUPの情報を優先する
@@ -242,23 +287,11 @@ export class ProductsService {
 
     // 商品情報を返すだけで、DBには保存しない
     return {
-      makerName:
-        response.data.product[0].makerName === ''
-          ? '不明'
-          : response.data.product[0].makerName,
-      brandName:
-        response.data.product[0].brandName === ''
-          ? '不明'
-          : response.data.product[0].brandName,
-      name:
-        response.data.product[0].itemName === ''
-          ? '不明'
-          : response.data.product[0].itemName,
-      productImageUrl:
-        response.data.product[0].itemImageUrl === ''
-          ? '不明'
-          : response.data.product[0].itemImageUrl,
+      makerName: response.data.product[0].makerName || '不明',
+      brandName: response.data.product[0].brandName || '不明',
+      name: response.data.product[0].itemName || '不明',
       barcode: response.data.product[0].codeNumber,
+      imageUrl: cachedImageUrl,
       isRegistered: sameProduct ? true : false, // DBには無いProps True,Falseで登録処理の分岐を行う
     };
   }

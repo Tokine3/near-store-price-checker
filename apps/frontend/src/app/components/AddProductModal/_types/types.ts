@@ -1,4 +1,5 @@
-import { ScannedProduct } from "@/app/pages";
+import { ScannedProduct } from "@/app/home/page";
+
 
 export type Store = {
     id: string;
@@ -28,6 +29,8 @@ export type AddProductModalProps = {
     name: string;
     /** バーコード */
     barcode: string;
+    /** 商品画像URL */
+    imageUrl: string;
     /** 商品情報信時のコールバック */
     onSubmit: (data: { storeId: number; price: number }) => void;
     /** 商品が登録済みかどうか */
