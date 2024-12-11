@@ -22,6 +22,10 @@ type ModalContentProps = {
     onStoreModalOpen: () => void;
     onClose: () => void;
     onSubmit: (e: React.FormEvent) => void;
+    isEditing: boolean;
+    onEditToggle: () => void;
+    onNameChange: (value: string) => void;
+    priceError?: string;
 }
 
 export const ModalContent: FC<ModalContentProps> = ({
@@ -39,6 +43,10 @@ export const ModalContent: FC<ModalContentProps> = ({
     onStoreModalOpen,
     onClose,
     onSubmit,
+    isEditing,
+    onEditToggle,
+    onNameChange,
+    priceError,
 }) => {
     return (
         <motion.div 
@@ -47,11 +55,14 @@ export const ModalContent: FC<ModalContentProps> = ({
         >
         <form onSubmit={onSubmit} className="flex flex-col gap-4 sm:gap-6">
             <ProductInfo
-            barcode={barcode}
-            name={name}
-            makerName={makerName}
-            brandName={brandName}
-            imageUrl={imageUrl}
+                barcode={barcode}
+                name={name}
+                makerName={makerName}
+                brandName={brandName}
+                imageUrl={imageUrl}
+                isEditing={isEditing}
+                onEditToggle={onEditToggle}
+                onNameChange={onNameChange}
             />
 
             <StoreSelect
@@ -65,6 +76,7 @@ export const ModalContent: FC<ModalContentProps> = ({
             onPriceChange={onPriceChange}
             selectedStoreId={selectedStoreId}
             productStorePrice={productStorePrice}
+            error={priceError}
             />
 
             <ModalFooter

@@ -32,7 +32,7 @@ export type AddProductModalProps = {
     /** 商品画像URL */
     imageUrl: string;
     /** 商品情報信時のコールバック */
-    onSubmit: (data: { storeId: number; price: number }) => void;
+    onSubmit: (data: { storeId: number; price: number; name: string }) => void;
     /** 商品が登録済みかどうか */
     isRegistered: boolean;
     /** スキャンした商品の価格情報 */

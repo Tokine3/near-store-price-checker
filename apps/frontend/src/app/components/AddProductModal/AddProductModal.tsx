@@ -30,21 +30,53 @@ export const AddProductModal: FC<AddProductModalProps> = ({
     resetForm
   } = useProductPrice();
 
-  const formSubmit = useFormSubmit({
+  const [isStoreModalOpen, setIsStoreModalOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  // 編集中の商品名
+  const [editedName, setEditedName] = useState(name);
+  // 初期の商品名を保存
+  const [initializeName, setInitializeName] = useState(name);
+
+  // 編集モードの切り替え
+  const handleEditToggle = useCallback(() => {
+    if (isEditing) {
+      // 編集モードを終了するとき、空白の場合のみ元の名前を復元
+      if (!editedName.trim()) {
+        setEditedName(initializeName);
+      }
+    }
+    setIsEditing(!isEditing);
+  }, [isEditing, editedName, initializeName]);
+
+  // 商品名の更新
+  const handleNameChange = useCallback((value: string) => {
+    setEditedName(value);
+  }, []);
+
+  // フォーム送信時に編集した商品名を含める
+  const { handleSubmit, handleClose, priceError } = useFormSubmit({
     selectedStoreId,
     price,
-    onSubmit,
+    onSubmit: async (data) => {
+      await onSubmit({
+        ...data,
+        name: editedName,
+      });
+    },
     onClose,
     resetForm
   });
-  const [isStoreModalOpen, setIsStoreModalOpen] = useState(false);
 
-  // モーダルを開く際の初期化処理をuseCallbackでメモ化
+  // モーダルを開く際の初期化処理
   const initializeModal = useCallback(() => {
     fetchStores();
     resetForm();
-  }, [fetchStores, resetForm]);
+    setIsEditing(false);
+    setEditedName(name);
+    setInitializeName(name);
+  }, [fetchStores, resetForm, name]);
 
+  // モーダルが開かれたときのみ初期名前をセット
   useEffect(() => {
     if (!isOpen) return;
     initializeModal();
@@ -64,14 +96,14 @@ export const AddProductModal: FC<AddProductModalProps> = ({
     setProductStorePrice,
     onStoreSelectProp,
     scannedProduct?.prices
-  ]);  // 必要な関数のみを依存配列に追加
+  ]);
 
   return (
-    <DialogContainer isOpen={isOpen} onClose={formSubmit.handleClose}>
+    <DialogContainer isOpen={isOpen} onClose={handleClose}>
       <ModalHeader isRegistered={isRegistered} />
       <ModalContent
         barcode={barcode}
-        name={name}
+        name={editedName}
         makerName={makerName}
         brandName={brandName}
         imageUrl={imageUrl}
@@ -82,8 +114,12 @@ export const AddProductModal: FC<AddProductModalProps> = ({
         onPriceChange={handlePriceChange}
         productStorePrice={productStorePrice}
         onStoreModalOpen={() => setIsStoreModalOpen(true)}
-        onClose={formSubmit.handleClose}
-        onSubmit={formSubmit.handleSubmit}
+        onClose={handleClose}
+        onSubmit={handleSubmit}
+        isEditing={isEditing}
+        onEditToggle={handleEditToggle}
+        onNameChange={handleNameChange}
+        priceError={priceError}
       />
 
       <StoreRegistrationModal

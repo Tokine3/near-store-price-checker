@@ -9,6 +9,7 @@ type PriceInputProps = {
     onPriceChange: (value: string) => void;
     selectedStoreId: string;
     productStorePrice: ProductPrice | null;
+    error?: string;
 }
 
 export const PriceInput: React.FC<PriceInputProps> = ({
@@ -16,41 +17,49 @@ export const PriceInput: React.FC<PriceInputProps> = ({
     onPriceChange,
     selectedStoreId,
     productStorePrice,
+    error,
 }) => {
     return (
         <div className="flex flex-col gap-2">
-        <label className="text-sm font-medium text-gray-700">
-            価格
-        </label>
-        <div className="relative">
-            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-            <CurrencyJpy weight="duotone" size={20} color="#FBBA74" />
+            <label className="text-sm font-medium text-gray-700">
+                価格
+            </label>
+            <div className="relative">
+                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                    <CurrencyJpy weight="duotone" size={20} color="#FBBA74" />
+                </div>
+                <input
+                    type="text"
+                    value={price}
+                    onChange={(e) => onPriceChange(e.target.value)}
+                    className={twMerge(
+                        "w-full rounded-xl",
+                        "pl-10 py-2.5",
+                        "text-base font-medium text-gray-700",
+                        "bg-white",
+                        "border border-orange-100",
+                        "outline-none",
+                        "focus:border-transparent",
+                        "focus:ring-2 focus:ring-orange-500/20",
+                        "focus:shadow-[0_0_0_4px_rgba(249,115,22,0.1)]",
+                        "placeholder:text-gray-400",
+                        "transition-shadow duration-200",
+                        "[appearance:textfield]",
+                        "[&::-webkit-outer-spin-button]:appearance-none",
+                        "[&::-webkit-inner-spin-button]:appearance-none",
+                        "shadow-sm",
+                        error && "border-red-300 focus:ring-red-500/20"
+                    )}
+                    placeholder="0"
+                    formNoValidate
+                />
             </div>
-            <input
-            type="number"
-            value={price}
-            onChange={(e) => onPriceChange(e.target.value)}
-            className={twMerge(
-                "w-full rounded-xl",
-                "pl-10 py-2.5",
-                "text-base font-medium text-gray-700",
-                "bg-white",
-                "border border-orange-100",
-                "outline-none",
-                "focus:border-transparent",
-                "focus:ring-2 focus:ring-orange-500/20",
-                "focus:shadow-[0_0_0_4px_rgba(249,115,22,0.1)]",
-                "placeholder:text-gray-400",
-                "transition-shadow duration-200",
-                "[appearance:textfield]",
-                "[&::-webkit-outer-spin-button]:appearance-none",
-                "[&::-webkit-inner-spin-button]:appearance-none",
-                "shadow-sm"
+            
+            {error && (
+                <p className="text-sm text-red-500 mt-1">
+                    {error}
+                </p>
             )}
-            placeholder="0"
-            required
-            />
-        </div>
 
         <AnimatePresence>
             {selectedStoreId && (

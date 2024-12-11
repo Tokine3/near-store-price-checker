@@ -1,7 +1,4 @@
-import { FormEvent } from 'react';
-import { messages } from '../_components/_constants/message';
-import { toast } from 'react-toastify';
-
+import { useState } from 'react';
 
 type UseFormSubmitProps = {
     selectedStoreId: string;
@@ -18,31 +15,44 @@ export const useFormSubmit = ({
     onClose,
     resetForm
 }: UseFormSubmitProps) => {
-    const handleSubmit = (e: FormEvent) => {
+    const [priceError, setPriceError] = useState('');
+
+    const validateForm = () => {
+        let isValid = true;
+        
+        // 価格のバリデーション
+        if (!price || Number(price) <= 0) {
+            setPriceError('価格を入力してください');
+            isValid = false;
+        } else {
+            setPriceError('');
+        }
+
+        return isValid;
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        const priceNumber = Number(price);
 
-        if (!selectedStoreId) {
-        toast.error(messages.errors.storeRequired);
-        return;
+        if (!validateForm()) {
+            return;
         }
-        
-        if (priceNumber <= 0) {
-        toast.error(messages.errors.invalidPrice);
-        return;
+
+        try {
+            await onSubmit({
+                storeId: Number(selectedStoreId),
+                price: Number(price),
+            });
+            resetForm();
+            onClose();
+        } catch (error) {
+            console.error('送信エラー:', error);
         }
-        
-        onSubmit({
-        storeId: parseInt(selectedStoreId),
-        price: priceNumber,
-        });
-        handleClose();
     };
 
-    const handleClose = () => {
-        resetForm();
-        onClose();
+    return {
+        handleSubmit,
+        handleClose: onClose,
+        priceError,
     };
-
-    return { handleSubmit, handleClose };
 };

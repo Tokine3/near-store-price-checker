@@ -143,7 +143,7 @@ const fetchStores = async () => {
     }, 300);
   };
 
-  const handleSubmitProduct = async (data: { storeId: number; price: number }) => {
+  const handleSubmitProduct = async (data: { storeId: number; price: number; name: string }) => {
     if (!scannedProduct) {
       toast.error('商品情報が見つかりません');
       return;
@@ -152,7 +152,7 @@ const fetchStores = async () => {
     try {
       if (!scannedProduct.isRegistered) {
         await api.post('/products', {
-          name: scannedProduct.name,
+          name: data.name,
           makerName: scannedProduct.makerName,
           brandName: scannedProduct.brandName,
           barcode: scannedProduct.barcode,
