@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { BarcodeResult } from '../_types';
+import { convertFullWidthToHalfWidth } from '@/app/utils/string';
 
 type UseManualInputProps = {
     onDetected: (error: unknown, result?: BarcodeResult | null) => void;
@@ -11,10 +12,12 @@ export const useManualInput = ({ onDetected, onClose }: UseManualInputProps) => 
     const [manualBarcode, setManualBarcode] = useState('');
 
     const handleBarcodeChange = useCallback((value: string) => {
-        if (value === '' || /^\d+$/.test(value)) {
-            setManualBarcode(value);
+        const convertedValue = convertFullWidthToHalfWidth(value);
+        if (convertedValue === '' || /^\d+$/.test(convertedValue)) {
+            setManualBarcode(convertedValue);
         }
     }, []);
+
 
     // handleCloseを先に定義
     const handleClose = useCallback(() => {

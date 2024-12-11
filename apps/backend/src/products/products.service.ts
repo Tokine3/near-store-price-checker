@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { AddPriceDto } from './dto/add-price-dto';
@@ -221,8 +225,22 @@ export class ProductsService {
 
   async findByBarcode(barcode: string) {
     console.log('バーコード読み取り動いてる');
+
+    if (barcode.length < 6)
+      throw new BadRequestException('バーコード番号が正しくありません');
+
+    const response = await axios.get(
+      `https://api.jancodelookup.com/?appId=${process.env.JANCODELOOKUP_APP_KEY}&query=${barcode}&type=code&hits=1`,
+    );
+
+    if (!response.data.product) {
+      throw new NotFoundException('商品が見つかりませんでした');
+    }
+
+    const correctBarcode = response.data.product[0].codeNumber;
+
     const product = await this.prisma.product.findUnique({
-      where: { barcode },
+      where: { barcode: correctBarcode },
       include: {
         prices: {
           include: {
@@ -240,8 +258,11 @@ export class ProductsService {
 
     if (product) {
       // 既存の画像URLを取得
-      const imageUrl = `https://image.jancodelookup.com/${barcode}`;
-      const cachedImageUrl = await this.cacheProductImage(barcode, imageUrl);
+      const imageUrl = `https://image.jancodelookup.com/${correctBarcode}`;
+      const cachedImageUrl = await this.cacheProductImage(
+        correctBarcode,
+        imageUrl,
+      );
       return {
         id: product.id,
         name: product.name,
@@ -255,24 +276,17 @@ export class ProductsService {
       };
     }
 
-    const response = await axios.get(
-      `https://api.jancodelookup.com/?appId=${process.env.JANCODELOOKUP_APP_KEY}&query=${barcode}`,
-    );
-
-    console.log(response.data);
-    console.log(response.data.product[0].itemImageUrl);
-    if (!response.data.product) {
-      throw new NotFoundException('商品が見つかりませんでした');
-    }
-
     // 画像のキャッシュ
     const imageUrl = response.data.product[0].itemImageUrl;
-    const cachedImageUrl = await this.cacheProductImage(barcode, imageUrl);
+    const cachedImageUrl = await this.cacheProductImage(
+      correctBarcode,
+      imageUrl,
+    );
 
     // JANコードの最後の一桁があっても無くても同じ商品であることがあるため
     // JANCODELOOKUPの情報を優先する
     const sameProduct = await this.prisma.product.findUnique({
-      where: { barcode: response.data.product[0].codeNumber },
+      where: { barcode: correctBarcode },
       include: {
         prices: {
           include: {

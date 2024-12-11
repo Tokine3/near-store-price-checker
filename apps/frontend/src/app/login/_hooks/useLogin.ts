@@ -21,7 +21,7 @@ export const useLogin = () => {
 
             return true
         } catch {
-            return false;
+            throw new Error('ログインに失敗しました');
         }
     };
 

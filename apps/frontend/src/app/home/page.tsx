@@ -137,7 +137,7 @@ const fetchStores = async () => {
   const handleCancel = () => {
     setIsModalOpen(false);
     setScannedProduct(null);
-    // 完全にモーダルが閉じてから次のモーダルを開く
+    // バーコード読取モーダルに戻る
     setTimeout(() => {
       setIsBarcodeReaderOpen(true);
     }, 300);
@@ -168,7 +168,10 @@ const fetchStores = async () => {
   
       toast.success('商品情報を登録しました');
       setIsModalOpen(false);
+      setIsBarcodeReaderOpen(false);
       setScannedProduct(null);
+      // 商品一覧を更新
+      handleSearch();
     } catch (error) {
       console.error('Error submitting product:', error);
       toast.error('商品情報の登録に敗しました');
@@ -202,6 +205,11 @@ const fetchStores = async () => {
     setIsBarcodeReaderOpen(false);
 
     try {
+      if(result.barcodeNo.length < 6) {
+        toast.error('バーコード番号が正しくありません');
+        requestAnimationFrame(() => setIsBarcodeReaderOpen(true));
+        return;
+      }
       const response = await api.get(`/products/barcode/${result.barcodeNo}`);
       const productData = response.data;
 
@@ -216,13 +224,8 @@ const fetchStores = async () => {
         imageUrl: productData.imageUrl,
         isRegistered: productData.isRegistered
       };
-
-      console.log('newScannedProduct', newScannedProduct);
   
       setScannedProduct(newScannedProduct);
-
-      console.log('Scanned product:', scannedProduct);
-
       setIsModalOpen(true);
     } catch (error) {
       if (axios.isAxiosError(error)) {
