@@ -13,12 +13,23 @@ generator client {
   provider = "prisma-client-js"
 }
 
+model User {
+  userId String  @id
+  name String
+  email String
+  favs  UsersFavs[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  lastLoggedInAt  DateTime
+}
+
 model Product {
   id        Int      @id @default(autoincrement())
   name      String
   makerName String?
   brandName String?
   barcode   String   @unique
+  favs      UsersFavs[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   prices    ProductPrice[]
@@ -30,6 +41,15 @@ model Store {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   prices    ProductPrice[]
+}
+
+model UsersFavs {
+  id  Int @id @default(autoincrement())
+  user  User  @relation(fields: [userId], references: [userId])
+  userId  String
+  product Product @relation(fields: [productId], references: [id])
+  productId Int
+  createdAt DateTime @default(now())
 }
 
 model ProductPrice {

@@ -17,6 +17,7 @@ import { AddProductModal } from '../components/AddProductModal';
 import { BarCodeReaderModal } from '../components/BarCodeReaderModal';
 import { ProductSearchModal } from '../components/ProductSearchModal';
 import { StoreRegistrationModal } from '../components/StoreRegistrationModal';
+import { api } from '@/lib/axios';
 
 type BarcodeResult = {
   barcodeNo: string;
@@ -53,10 +54,36 @@ export type ScannedProduct = {
 
 const HomePage: React.FC = () => {
   useEffect(() => {
+    const updateLastLoginTime = async () => {
+        try {
+            await api.patch('/users/login');
+        } catch (error) {
+            console.error('Failed to update last login time:', error);
+        }
+    };
+
+    // コンポーネントマウント時に最終ログイン時間を更新
+    updateLastLoginTime();
+
+    // 既存のuseEffect処理
+    const handleScroll = () => {
+        setScrollY(window.scrollY);
+    };
+    
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    fetchStores();
+
     if (typeof window !== 'undefined') {
-      Modal.setAppElement('body');
+        Modal.setAppElement('body');
     }
-  }, []);
+    
+    return () => {
+        window.removeEventListener('scroll', handleScroll);
+        setIsModalOpen(false);
+        setIsBarcodeReaderOpen(false);
+        setScannedProduct(null);
+    };
+}, []);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState<Product[]>([]);
@@ -69,11 +96,6 @@ const HomePage: React.FC = () => {
   const [stores, setStores] = useState<Array<{ id: string; name: string }>>([]);
   const [scrollY, setScrollY] = useState(0);  // スクロール位置の状態管理を追加
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
-
-// スクロール位置
-useEffect(() => {
-
-}, []);
 
   // エンターキーイベントをキャンセルする関数
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -93,7 +115,7 @@ useEffect(() => {
 // 店舗情報を取得する関数
 const fetchStores = async () => {
   try {
-    const response = await axios.get('http://localhost:8000/stores');
+    const response = await api.get('/stores')
     setStores([{ id: 'all', name: 'すべての店舗' }, ...response.data]);
   } catch (error) {
     console.error('Error fetching stores:', error);

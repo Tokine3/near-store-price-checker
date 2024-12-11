@@ -1,26 +1,83 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
-import { signInWithPopup, signInWithEmailAndPassword } from 'firebase/auth';
-import { auth, googleProvider } from '@/lib/firebase/config';
-import axios from 'axios';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '@/lib/firebase/config';
+import { api } from '@/lib/axios';
 import { FirebaseError } from 'firebase/app';
 
 export const useLogin = () => {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
+    const [showNameModal, setShowNameModal] = useState(false);
+    const [userEmail, setUserEmail] = useState('');
+
+    const checkUserExists = async () => {
+        try {
+            const response = await api.get('/users/me');
+            const user = response.data;
+
+            if(!user) return false;
+
+            return true
+        } catch {
+            return false;
+        }
+    };
+
+    const registerUser = async (name: string) => {
+        try {
+            const response = await api.post('/users', {
+                name: name,
+                email: userEmail
+            })
+            
+            const registeredUser = response.data;
+            if (!registeredUser) {
+                throw new Error('ユーザー登録に失敗しました');
+            }
+            
+            toast.success('ユーザー登録が完了しました');
+            router.push('/home');
+        } catch {
+            console.log('ERROR TRUE')
+            const errorMessage = 'ユーザー登録に失敗しました';
+            clearAuthAndRedirect();
+            throw new Error(errorMessage);
+        }
+    };
+
+    const clearAuthAndRedirect = () => {
+        document.cookie = 'auth-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+        document.cookie = 'uid=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+        router.push('/login');
+    };
 
     const login = async (email: string, password: string) => {
         setIsLoading(true);
         try {
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
             const idToken = await userCredential.user.getIdToken();
+            const uid = userCredential.user.uid;
+            
+            setUserEmail(email);
     
-            const response = await axios.post('http://localhost:8000/auth/verify', {
+            const response = await api.post('/auth/verify', {
                 token: idToken
             });
-            document.cookie = `auth-token=${response.data.token}; path=/; max-age=${60 * 60 * 24 * 5}`;
-            router.push('/home');
+            const MAX_AGE = 60 * 60 * 24 * 5;
+            document.cookie = `auth-token=${response.data.token}; path=/; max-age=${MAX_AGE}`;
+            document.cookie = `uid=${uid}; path=/; max-age=${MAX_AGE}`;
+    
+            const userExists = await checkUserExists();
+            
+            if (!userExists) {
+                setShowNameModal(true);
+            } else {
+                await api.patch('users/login');
+                toast.success('ログインしました');
+                router.push('/home');
+            }
         } catch (error: unknown) {
             if (error instanceof FirebaseError) {
                 if (error.code === 'auth/invalid-email' || error.code === 'auth/user-not-found') {
@@ -35,36 +92,11 @@ export const useLogin = () => {
         }
     };
 
-    const googleLogin = async () => {
-        setIsLoading(true);
-        try {
-            const result = await signInWithPopup(auth, googleProvider);
-            const idToken = await result.user.getIdToken();
-
-            const response = await axios.post('http://localhost:8000/auth/verify', {
-                token: idToken
-            });
-            console.log('RESPONSE DONE')
-
-            document.cookie = `auth-token=${response.data.token}; path=/; max-age=${60 * 60 * 24 * 5}`;
-            toast.success('ログインしました');
-            router.push('/home');
-        } catch (error: unknown) {
-            console.error('Google login error:', error);
-            if (error instanceof Error && 'code' in error && error.code === 'auth/popup-closed-by-user') {
-                toast.error('ログインがキャンセルされました');
-            } else {
-                toast.error('ログインに失敗しました');
-            }
-            throw error;
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
     return {
         login,
-        googleLogin,
         isLoading,
+        showNameModal,
+        setShowNameModal,
+        registerUser
     };
 };
