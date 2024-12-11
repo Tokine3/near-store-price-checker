@@ -43,7 +43,7 @@ importers:
         specifier: ^3.4.16
         version: 3.4.16
       turbo:
-        specifier: ^2.3.3
+        specifier: latest
         version: 2.3.3
 
 packages:
