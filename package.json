@@ -4,8 +4,9 @@
 	"private": true,
 	"packageManager": "pnpm@9.5.0",
 	"scripts": {
-		"build": "pnpm --filter frontend build && pnpm --filter backend build",
-		"dev": "pnpm --filter frontend dev & pnpm --filter backend dev"
+		"dev": "pnpm --parallel run dev",
+		"build": "pnpm --parallel run build",
+		"lint": "pnpm --parallel run lint"
 	},
 	"dependencies": {
 		"@nestjs/cli": "^10.4.8",
