@@ -5,6 +5,7 @@ import {
   signInWithEmailAndPassword,
   GoogleAuthProvider,
   signInWithPopup,
+  getAuth,
 } from 'firebase/auth';
 import { auth } from '@/lib/firebase/config';
 import { api } from '@/lib/axios';
