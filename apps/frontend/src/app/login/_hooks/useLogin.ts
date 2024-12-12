@@ -97,6 +97,7 @@ export const useLogin = () => {
       } else {
         await api.patch('users/login');
         toast.success('ログインしました');
+        onSuccess?.();
         router.push('/home'); // 既存ユーザーの場合のみリダイレクト
       }
     } catch (error) {
