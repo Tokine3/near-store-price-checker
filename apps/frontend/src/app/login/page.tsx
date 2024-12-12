@@ -102,7 +102,7 @@ const LoginPage: FC = () => {
       <NameRegistrationModal
         isOpen={showNameModal}
         onClose={() => setShowNameModal(false)}
-        onSubmit={registerUser}
+        onSubmit={(name) => registerUser(name, handleLoginSuccess)}
         onError={() => {}}
       />
     </>

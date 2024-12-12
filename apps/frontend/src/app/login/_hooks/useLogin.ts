@@ -32,7 +32,7 @@ export const useLogin = () => {
     router.push('/login');
   };
 
-  const registerUser = async (name: string) => {
+  const registerUser = async (name: string, onSuccess?: () => void) => {
     try {
       const response = await api.post('/users', {
         name: name,
@@ -45,6 +45,8 @@ export const useLogin = () => {
       }
 
       toast.success('ユーザー登録が完了しました');
+      setShowNameModal(false); // モーダルを閉じる
+      onSuccess?.(); // 成功時のコールバックを実行
       router.push('/home');
     } catch {
       const errorMessage = 'ユーザー登録に失敗しました';
@@ -97,6 +99,7 @@ export const useLogin = () => {
       } else {
         await api.patch('users/login');
         toast.success('ログインしました');
+        setShowNameModal(false);
         onSuccess?.();
         router.push('/home'); // 既存ユーザーの場合のみリダイレクト
       }
