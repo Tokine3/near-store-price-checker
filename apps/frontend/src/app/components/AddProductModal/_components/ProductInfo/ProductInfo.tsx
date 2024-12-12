@@ -1,7 +1,9 @@
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { ImageSquare, Barcode, PencilSimple } from '@phosphor-icons/react';
+import { Barcode, PencilSimple } from '@phosphor-icons/react';
 import { twMerge } from 'tailwind-merge';
+import { useState } from 'react';
+import { NoImage } from '@/app/components/common/NoImage.tsx/NoImage';
 type ProductInfoProps = {
     barcode: string;
     name: string;
@@ -23,6 +25,7 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
     onEditToggle,
     onNameChange,
 }) => {
+    const [imageError, setImageError] = useState(false);
     const handleBlur = () => {
         if (isEditing) {
             onEditToggle();
@@ -53,7 +56,7 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
             <div className="flex items-start gap-4">
                 {/* 商品画像 */}
                 <div className="relative w-24 h-24 flex-shrink-0">
-                    {barcode ? (
+                    {barcode && !imageError? (
                         <Image
                             src={imageUrl}
                             alt={name}
@@ -61,15 +64,13 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
                             sizes="(max-width: 96px) 100vw, 96px"
                             style={{ objectFit: 'contain' }}
                             className="rounded-lg shadow-sm bg-white"
-                            onError={(e) => {
+                            onError={() => {
                                 console.error('画像読み込みエラー:', imageUrl);
-                                e.currentTarget.src = '';
+                                setImageError(true);
                             }}
                         />
                     ) : (
-                        <div className="w-full h-full bg-white rounded-lg flex items-center justify-center border border-orange-100">
-                            <ImageSquare weight="duotone" size={40} color="#FDBA74" />
-                        </div>
+                        <NoImage size={32} />
                     )}
                 </div>
 

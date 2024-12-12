@@ -90,7 +90,7 @@ export class ProductsService {
   }
 
   async addPrice(barcode: string, body: AddPriceDto) {
-    const { price, storeId } = body;
+    const { price, storeId, name } = body;
 
     const { id } = await this.prisma.product.findUnique({
       where: {
@@ -120,6 +120,9 @@ export class ProductsService {
       },
       update: {
         price,
+        product: {
+          update: name ? { name } : undefined,
+        },
       },
     });
   }
