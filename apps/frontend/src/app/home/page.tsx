@@ -38,7 +38,7 @@ import { ProductSearchModal } from '../components/ProductSearchModal';
 import { StoreRegistrationModal } from '../components/StoreRegistrationModal';
 import { api } from '@/lib/axios';
 import { LoadingOverlay } from '../components/common/LoadingOverlay/LoadingOverlay';
-import { NoImage } from '../components/common/NoImage.tsx/NoImage';
+import { NoImage } from '../components/common/NoImage/NoImage';
 
 type BarcodeResult = {
   barcodeNo: string;
@@ -670,7 +670,7 @@ const HomePage: React.FC = () => {
                     transition={{ duration: 0.2 }}
                   >
                     <div className='p-4 sm:p-6'>
-                      <div className='flex flex-col sm:flex-row gap-4'>
+                      <div className='flex items-center flex-col sm:flex-row gap-4'>
                         {/* 商品画像 */}
                         <div className='w-20 h-20 sm:w-32 sm:h-32 mx-auto sm:mx-0 flex-shrink-0 bg-white rounded-xl overflow-hidden'>
                           {!imageLoadError[product.id] ? (
@@ -689,6 +689,7 @@ const HomePage: React.FC = () => {
 
                         {/* 商品情報 */}
                         <div className='flex-1 min-w-0 text-center sm:text-left'>
+                          {/* メーカー・ブランド情報 */}
                           <div className='flex flex-wrap justify-center sm:justify-start gap-2 mb-2'>
                             {product.makerName && (
                               <span className='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800'>
@@ -780,20 +781,68 @@ const HomePage: React.FC = () => {
                               </span>
                             </motion.div>
 
-                            {/* 価格表示 */}
-                            <div className='text-sm text-gray-500 mb-2'>
-                              最安価格
+                            {/* 価格・店舗情報 */}
+                            <div className='flex flex-row sm:flex-col gap-3 justify-center'>
+                              {/* 最安値 */}
+                              <div className='flex-1 flex flex-col items-center sm:items-end gap-1.5'>
+                                <div className='flex items-center gap-1.5 text-sm font-medium text-gray-600'>
+                                  <Tag
+                                    weight='duotone'
+                                    size={16}
+                                    className='text-orange-500'
+                                  />
+                                  <span>最安値</span>
+                                </div>
+                                <div className='flex items-center gap-1'>
+                                  <CurrencyJpy
+                                    weight='duotone'
+                                    size={28}
+                                    color='#F97316'
+                                  />
+                                  <span className='text-3xl sm:text-3xl font-bold text-orange-500'>
+                                    {product.prices[0]?.price.toLocaleString() ??
+                                      '-'}
+                                  </span>
+                                </div>
+                              </div>
+
+                              {/* 店舗情報 */}
+                              <div className='flex-1 flex flex-col items-center sm:items-end gap-1.5'>
+                                <div className='flex items-center gap-1.5 text-sm font-medium text-gray-600'>
+                                  <Storefront
+                                    weight='duotone'
+                                    size={16}
+                                    className='text-orange-500'
+                                  />
+                                  <span>店舗</span>
+                                </div>
+                                <div className='flex items-center gap-2'>
+                                  <span className='text-2xl sm:text-2xl font-bold text-orange-500 truncate max-w-[160px]'>
+                                    {product.prices[0]?.store.name ?? '-'}
+                                  </span>
+                                </div>
+                              </div>
                             </div>
-                            <div className='flex items-center justify-center sm:justify-end gap-1.5'>
-                              <CurrencyJpy
-                                weight='duotone'
-                                size={32}
-                                color='#F97316'
-                              />
-                              <span className='text-3xl sm:text-4xl font-bold text-orange-500'>
-                                {product.prices[0]?.price.toLocaleString() ??
-                                  '-'}
-                              </span>
+
+                            {/* 登録日情報 */}
+                            <div className='flex-1 flex flex-col items-center sm:items-end gap-1.5 mt-2'>
+                              <div className='flex items-center gap-1.5 text-sm font-medium text-gray-600'>
+                                <Calendar
+                                  weight='duotone'
+                                  size={16}
+                                  className='text-orange-500'
+                                />
+                                <span>登録日</span>
+                              </div>
+                              <div className='flex items-center gap-2'>
+                                <span className='text-1xl sm:text-1xl text-gray-500 truncate max-w-[160px]'>
+                                  {product.prices[0]?.updatedAt
+                                    ? dayjs(product.prices[0].updatedAt).format(
+                                        'YYYY/MM/DD'
+                                      )
+                                    : '-'}
+                                </span>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -820,7 +869,9 @@ const HomePage: React.FC = () => {
                                   size={20}
                                   color='#F97316'
                                 />
-                                <h3 className='font-medium'>価格情報</h3>
+                                <h3 className='font-medium'>
+                                  他の店舗の価格情報
+                                </h3>
                               </div>
                               <motion.button
                                 onClick={() => {
@@ -865,7 +916,7 @@ const HomePage: React.FC = () => {
                                     color='#FDBA74'
                                   />
                                   <p className='text-sm font-medium text-gray-600'>
-                                    価格情報が登録されていません
+                                    他店舗の価格情報が登録されていません
                                   </p>
                                 </motion.div>
                               ) : (
