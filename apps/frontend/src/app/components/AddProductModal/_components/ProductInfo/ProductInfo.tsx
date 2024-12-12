@@ -87,7 +87,7 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
                             </span>
                         )}
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 w-full min-w-0">
                     {isEditing ? (
                             <input
                                 type="text"
@@ -96,7 +96,7 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
                                 onBlur={handleBlur}
                                 onKeyDown={handleKeyDown}
                                 className={twMerge(
-                                    "flex-1",
+                                    "w-full min-w-0",
                                     "px-3 py-2",
                                     "text-base sm:text-lg font-medium text-gray-900",
                                     "bg-white",

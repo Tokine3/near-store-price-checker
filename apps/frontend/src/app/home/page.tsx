@@ -12,7 +12,7 @@ import { twMerge } from 'tailwind-merge';
 import dayjs from 'dayjs';
 import { ArrowTrendingUpIcon, TagIcon } from '@heroicons/react/20/solid';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CurrencyJpy, ShoppingCart, Tag, CaretDoubleDown, MagnifyingGlass, Storefront, CaretUpDown, Check, Barcode, List, CaretDown, Calendar, Timer, ImageSquare, CaretUp, Info } from '@phosphor-icons/react';
+import { CurrencyJpy, ShoppingCart, Tag, CaretDoubleDown, MagnifyingGlass, Storefront, CaretUpDown, Barcode, List, CaretDown, Calendar, Timer, ImageSquare, CaretUp, Info } from '@phosphor-icons/react';
 import { AddProductModal } from '../components/AddProductModal';
 import { BarCodeReaderModal } from '../components/BarCodeReaderModal';
 import { ProductSearchModal } from '../components/ProductSearchModal';
@@ -438,7 +438,7 @@ const fetchStores = async () => {
                                 </span>
                                 {selected && (
                                   <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-orange-500">
-                                    <Check weight="bold" size={20} />
+                                    <Tag weight="bold" size={20} />
                                   </span>
                                 )}
                               </>
@@ -870,7 +870,10 @@ const fetchStores = async () => {
       { /* 商品追加モーダル */}
       <AddProductModal
         isOpen={isModalOpen && scannedProduct !== null}
-        onClose={handleCancel}
+        onClose={() => {
+          handleCancel();
+          fetchStores();
+        }}
         makerName={scannedProduct?.makerName || ''}
         brandName={scannedProduct?.brandName || ''}
         name={scannedProduct?.name || ''}
@@ -892,7 +895,10 @@ const fetchStores = async () => {
       {/* 店舗追加モーダル */}
       <StoreRegistrationModal
         isOpen={isStoreModalOpen}
-        onClose={() => setIsStoreModalOpen(false)}
+        onClose={() => {
+          setIsStoreModalOpen(false);
+          fetchStores();
+        }}
       />
 
       {/* Loading Overlay */}
