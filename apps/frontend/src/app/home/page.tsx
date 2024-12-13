@@ -755,7 +755,7 @@ const HomePage: React.FC = () => {
                             {/* 更新バッジ */}
                             <motion.div
                               className={twMerge(
-                                'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full',
+                                'inline-flex items-center gap-1 px-1 py-1 rounded-full',
                                 'border shadow-sm mb-2',
                                 product.prices[0]?.updatedAt &&
                                   isUpdatedWithinDays(
