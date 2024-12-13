@@ -765,7 +765,7 @@ const HomePage: React.FC = () => {
                                   ? 'bg-green-50 text-green-700 border-green-200'
                                   : 'bg-gray-50 text-gray-600 border-gray-200'
                               )}
-                              whileHover={{ scale: 1.05 }}
+                              // whileHover={{ scale: 1.05 }}
                             >
                               <Timer weight='duotone' size={14} />
                               <span className='text-xs font-medium whitespace-nowrap'>
