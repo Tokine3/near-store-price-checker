@@ -16,7 +16,6 @@ import {
 } from '@heroicons/react/20/solid';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  CurrencyJpy,
   ShoppingCart,
   Tag,
   CaretDoubleDown,
@@ -752,13 +751,12 @@ const HomePage: React.FC = () => {
 
                         {/* 価格表示 */}
                         <div className='w-full sm:w-auto text-center sm:text-right mt-4 sm:mt-0'>
-                          <div className='relative pt-8'>
+                          <div className='relative'>
                             {/* 更新バッジ */}
                             <motion.div
                               className={twMerge(
-                                'absolute -top-1 left-1/2 sm:left-auto sm:right-0 transform -translate-x-1/2 sm:translate-x-0',
-                                'flex items-center gap-1.5 px-3 py-1.5 rounded-full',
-                                'border shadow-sm',
+                                'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full',
+                                'border shadow-sm mb-2',
                                 product.prices[0]?.updatedAt &&
                                   isUpdatedWithinDays(
                                     product.prices[0].updatedAt,
@@ -776,7 +774,7 @@ const HomePage: React.FC = () => {
                                   product.prices[0].updatedAt,
                                   7
                                 )
-                                  ? '7日以内に更新'
+                                  ? '最近の更新'
                                   : '7日以上更新なし'}
                               </span>
                             </motion.div>
@@ -791,17 +789,14 @@ const HomePage: React.FC = () => {
                                     size={16}
                                     className='text-orange-500'
                                   />
-                                  <span>最安値</span>
+                                  <span>最安値（税込）</span>
                                 </div>
+
                                 <div className='flex items-center gap-1'>
-                                  <CurrencyJpy
-                                    weight='duotone'
-                                    size={28}
-                                    color='#F97316'
-                                  />
-                                  <span className='text-3xl sm:text-3xl font-bold text-orange-500'>
+                                  <span className='text-3xl sm:text-3xl font-bold text-orange-500 whitespace-nowrap'>
                                     {product.prices[0]?.price.toLocaleString() ??
                                       '-'}
+                                    <span className='text-base'>円</span>
                                   </span>
                                 </div>
                               </div>
@@ -870,7 +865,7 @@ const HomePage: React.FC = () => {
                                   color='#F97316'
                                 />
                                 <h3 className='font-medium'>
-                                  他の店舗の価格情報
+                                  他店舗の価格情報（税込）
                                 </h3>
                               </div>
                               <motion.button
@@ -977,20 +972,24 @@ const HomePage: React.FC = () => {
                                           >
                                             <ArrowTrendingUpIcon className='h-3 w-3' />
                                             <span>
-                                              最安値+¥
-                                              {priceDiff.toLocaleString()}
+                                              最安値+
+                                              {priceDiff.toLocaleString() +
+                                                '円'}
                                             </span>
                                           </div>
                                         )}
                                         {/* 価格表示 */}
                                         <div className='flex items-center gap-1.5'>
-                                          <CurrencyJpy
+                                          <Tag
                                             weight='duotone'
                                             size={24}
                                             color='#F97316'
                                           />
                                           <span className='text-2xl sm:text-3xl font-bold text-orange-500 whitespace-nowrap'>
                                             {price.price.toLocaleString()}
+                                            <span className='text-base'>
+                                              円
+                                            </span>
                                           </span>
                                         </div>
                                       </div>
