@@ -38,7 +38,7 @@ import { ProductSearchModal } from '../components/ProductSearchModal';
 import { StoreRegistrationModal } from '../components/StoreRegistrationModal';
 import { api } from '@/lib/axios';
 import { LoadingOverlay } from '../components/common/LoadingOverlay/LoadingOverlay';
-import { NoImage } from '../components/common/NoImage.tsx/NoImage';
+import { NoImage } from '../components/common/NoImage/NoImage';
 
 type BarcodeResult = {
   barcodeNo: string;
